@@ -1,0 +1,122 @@
+<!-- filepath: c:\Users\Other\Desktop\mental-health-chatbot\mental_health_chatbot\templates\home.html -->
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Hero Section -->
+    <section class="text-center mb-5">
+        <h1 class="display-4 fw-bold mb-3">
+            <i class="fa-solid fa-heart-pulse text-primary"></i> Welcome to Your Mental Health Companion
+        </h1>
+        <p class="lead text-muted mb-4">
+            Your confidential, AI-powered assistant for mental wellness. We're here to listen, support, and guide you—anytime, anywhere.
+        </p>
+        <a href="#" class="btn btn-lg btn-primary shadow">
+            <i class="fa-solid fa-comments"></i> Start Chatting
+        </a>
+    </section>
+
+    <!-- Features Section -->
+    <section class="row text-center mb-5">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <i class="fa-solid fa-brain fa-2x text-primary mb-3"></i>
+                    <h5 class="card-title fw-bold">AI-Powered Conversations</h5>
+                    <p class="card-text">Chat with our empathetic AI for stress, anxiety, or just to talk. Your privacy is our priority.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <i class="fa-solid fa-book-open fa-2x text-success mb-3"></i>
+                    <h5 class="card-title fw-bold">Mental Health Resources</h5>
+                    <p class="card-text">Access articles, exercises, and tips curated by mental health professionals to support your journey.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <i class="fa-solid fa-user-shield fa-2x text-warning mb-3"></i>
+                    <h5 class="card-title fw-bold">Safe & Confidential</h5>
+                    <p class="card-text">Your conversations are private and secure. We never share your data with anyone.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="mb-5">
+        <h2 class="fw-bold mb-4 text-center">How It Works</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="d-flex align-items-start">
+                    <span class="badge bg-primary rounded-pill me-3 fs-5">1</span>
+                    <div>
+                        <h6 class="fw-bold mb-1">Start a Conversation</h6>
+                        <p class="mb-0 text-muted">Click "Start Chatting" and introduce yourself or share how you feel.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="d-flex align-items-start">
+                    <span class="badge bg-success rounded-pill me-3 fs-5">2</span>
+                    <div>
+                        <h6 class="fw-bold mb-1">Get Support</h6>
+                        <p class="mb-0 text-muted">Receive empathetic responses, coping strategies, and resource suggestions.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="d-flex align-items-start">
+                    <span class="badge bg-warning rounded-pill me-3 fs-5">3</span>
+                    <div>
+                        <h6 class="fw-bold mb-1">Track Your Progress</h6>
+                        <p class="mb-0 text-muted">Review your chat history and access helpful tools anytime.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="mb-5">
+        <h2 class="fw-bold mb-4 text-center">What Users Say</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-4 mb-3">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <p class="fst-italic">"This chatbot helped me through a tough night. It really listens and gives great advice!"</p>
+                        <div class="text-end">
+                            <span class="fw-bold">— Alex</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <p class="fst-italic">"I love the privacy and the resources. It feels safe to open up here."</p>
+                        <div class="text-end">
+                            <span class="fw-bold">— Jamie</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="text-center">
+        <h2 class="fw-bold mb-3">Ready to Take a Step Toward Wellness?</h2>
+        <p class="lead text-muted mb-4">Start a conversation now or explore our resources to support your mental health journey.</p>
+        <a href="#" class="btn btn-lg btn-success shadow">
+            <i class="fa-solid fa-comments"></i> Chat Now
+        </a>
+    </section>
+</div>
+{% endblock %}

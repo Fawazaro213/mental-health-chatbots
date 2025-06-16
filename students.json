@@ -1,0 +1,102 @@
+[
+    {
+        "matric_number": "210591032",
+        "first_name": "Fawaz",
+        "middle_name": "Ayomide",
+        "last_name": "Aro-Okoya",
+        "faculty": "Science",
+        "department": "Computer Science",
+        "year_admitted": 2021,
+        "email": "210591032@student.lasu.edu.ng"
+    },
+    {
+        "matric_number": "210542178",
+        "first_name": "Adebayo",
+        "middle_name": "Oluwaseun",
+        "last_name": "Ogunlesi",
+        "faculty": "Engineering",
+        "department": "Electrical Engineering",
+        "year_admitted": 2021,
+        "email": "210542178@student.lasu.edu.ng"
+    },
+    {
+        "matric_number": "210512345",
+        "first_name": "Chioma",
+        "middle_name": "Amaka",
+        "last_name": "Eze",
+        "faculty": "Arts",
+        "department": "English Literature",
+        "year_admitted": 2021,
+        "email": "210512345@student.lasu.edu.ng"
+    },
+    {
+        "matric_number": "210587654",
+        "first_name": "Ibrahim",
+        "middle_name": "Musa",
+        "last_name": "Mohammed",
+        "faculty": "Management Sciences",
+        "department": "Accounting",
+        "year_admitted": 2021,
+        "email": "210587654@student.lasu.edu.ng"
+    },
+    {
+        "matric_number": "210556789",
+        "first_name": "Folake",
+        "middle_name": "Adenike",
+        "last_name": "Adeleke",
+        "faculty": "Education",
+        "department": "Educational Management",
+        "year_admitted": 2021,
+        "email": "210556789@student.lasu.edu.ng"
+    },
+    {
+        "matric_number": "210523456",
+        "first_name": "Emeka",
+        "middle_name": "Chukwuemeka",
+        "last_name": "Okonkwo",
+        "faculty": "Law",
+        "department": "Jurisprudence",
+        "year_admitted": 2021,
+        "email": "210523456@student.lasu.edu.ng"
+    },
+    {
+        "matric_number": "210534567",
+        "first_name": "Amina",
+        "middle_name": "Yusuf",
+        "last_name": "Bello",
+        "faculty": "Social Sciences",
+        "department": "Sociology",
+        "year_admitted": 2021,
+        "email": "210534567@student.lasu.edu.ng"
+    },
+    {
+        "matric_number": "210545678",
+        "first_name": "Oluwatobi",
+        "middle_name": "Samuel",
+        "last_name": "Johnson",
+        "faculty": "Science",
+        "department": "Biochemistry",
+        "year_admitted": 2021,
+        "email": "210545678@student.lasu.edu.ng"
+    },
+    {
+        "matric_number": "210598765",
+        "first_name": "Ngozi",
+        "middle_name": "Chidinma",
+        "last_name": "Okafor",
+        "faculty": "Clinical Sciences",
+        "department": "Medicine and Surgery",
+        "year_admitted": 2021,
+        "email": "210598765@student.lasu.edu.ng"
+    },
+    {
+        "matric_number": "210567890",
+        "first_name": "Yusuf",
+        "middle_name": "Abdul",
+        "last_name": "Suleiman",
+        "faculty": "Environmental Sciences",
+        "department": "Architecture",
+        "year_admitted": 2021,
+        "email": "210567890@student.lasu.edu.ng"
+    }
+]

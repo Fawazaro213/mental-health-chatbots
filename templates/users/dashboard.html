@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="dashboard-container">
+    <h2>Welcome, {{ user.preferred_name|default:user.username }}!</h2>
+    
+    <div class="dashboard-sections">
+        <section class="quick-access">
+            <h3>Quick Actions</h3>
+            <a href="{% url 'chatbot:new_chat' %}" class="btn btn-primary">
+                Start New Chat
+            </a>
+            <a href="{% url 'profile' %}" class="btn btn-secondary">
+                Update Profile
+            </a>
+        </section>
+        
+        <section class="recent-activity">
+            <h3>Recent Conversations</h3>
+            {% if conversations %}
+                <ul class="conversation-list">
+                    {% for conv in conversations %}
+                    <li>
+                        <a href="{% url 'chatbot:conversation' conv.id %}">
+                            {{ conv.start_time|date:"M d, Y H:i" }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No conversations yet. Start chatting with our mental health bot!</p>
+            {% endif %}
+        </section>
+        
+        <section class="mood-tracker">
+            <h3>Your Mood Overview</h3>
+            {% if profile.average_mood_score %}
+                <div class="mood-display">
+                    <p>Your average mood: {{ profile.average_mood_score|floatformat:1 }}/10</p>
+                    <p>Last checked: {{ profile.last_mood_check|date:"M d, Y" }}</p>
+                </div>
+            {% else %}
+                <p>Complete a mood check to see your trends.</p>
+            {% endif %}
+        </section>
+    </div>
+</div>
+{% endblock %}

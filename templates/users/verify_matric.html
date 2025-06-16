@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Verify{% endblock %}
+
+
+{% block content %}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Student Verification</h4>
+                </div>
+                <div class="card-body">
+                    <p class="lead">Please enter your matriculation number to begin registration</p>
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form.non_field_errors }}
+                        <div class="mb-3">
+                            {{ form.matric_number.label_tag }}
+                            {{ form.matric_number }}
+                            {{ form.matric_number.errors }}
+                            <small class="form-text text-muted">{{ form.matric_number.help_text }}</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Verify Matric Number</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+{% endblock footer %}
