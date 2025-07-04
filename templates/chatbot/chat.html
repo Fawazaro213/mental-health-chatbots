@@ -1,0 +1,307 @@
+{% extends 'layout.html' %}
+{% block title %}{{ conversation.title|default:"Chat" }} - MindCare{% endblock %}
+
+{% block content %}
+<style>
+  html, body, .wrapper {
+    height: 100%;
+  }
+
+  #mainContent {
+    padding: 0 !important;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .chat-container {
+    background-color: var(--gray-light);
+    flex-grow: 1;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .chat-box {
+    flex-grow: 1;
+    overflow-y: auto;
+    max-height: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .crisis-alert {
+    margin-bottom: 1rem;
+  }
+
+  .chat-form {
+    margin-top: auto;
+  }
+  .message-bubble {
+  border-radius: 16px;
+  padding: 0.75rem 1rem;
+  max-width: 75%;
+  position: relative;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+/* User messages (e.g., right-aligned) */
+.user-message {
+  background-color: #daf1e0; /* soft mint green */
+  color: #123;
+  align-self: flex-end;
+  border-bottom-right-radius: 0;
+}
+
+/* Bot messages (e.g., left-aligned) */
+.bot-message {
+  background-color: #f1e9fc; /* soft lavender */
+  color: #222;
+  align-self: flex-start;
+  border-bottom-left-radius: 0;
+}
+
+</style>
+
+<div class="chat-container">
+  <!-- Chat Header -->
+  <div class="chat-header mb-3 d-flex justify-content-between align-items-center">
+    <h3 class="mb-0">
+      <i class="fas fa-comments me-2" style="color: var(--teal-tranquil);"></i>
+      {{ conversation.title|default:"Chat Session" }}
+    </h3>
+    <a href="#" class="btn btn-sm chat-history-btn">
+      <i class="fas fa-history me-1"></i>View History
+    </a>
+  </div>
+
+  <!-- Chat Box -->
+  <div id="chat-box" class="chat-box rounded-lg shadow-sm p-3 mb-3">
+    {% for message in conversation.messages.all %}
+      <div class="chat-message mb-3 d-flex {% if message.sender == 'user' %}justify-content-end{% endif %}">
+        <div class="message-bubble {% if message.sender == 'user' %}user-message{% else %}bot-message{% endif %}">
+          <div class="message-sender small mb-1">
+            {% if message.sender == 'user' %}
+              <i class="fas fa-user me-1"></i>You
+            {% else %}
+              <i class="fas fa-robot me-1"></i>MindCare
+            {% endif %}
+          </div>
+          <div class="message-content">
+            {{ message.content|linebreaksbr }}
+          </div>
+          <div class="message-time small text-muted mt-1">
+            {{ message.timestamp|date:"g:i A" }}
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="chat-empty-state text-center py-5">
+        <i class="fas fa-comment-slash fa-2x mb-3" style="color: var(--gray-light);"></i>
+        <p>Start your conversation with MindCare</p>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Crisis Alert -->
+  <div class="crisis-alert alert text-center mb-3" role="alert">
+    <i class="fas fa-exclamation-triangle me-2"></i>
+    If you're feeling overwhelmed, <a href="{% url 'emergency_contacts' %}" class="alert-link">get support here</a>.
+  </div>
+
+  <!-- Chat Form -->
+  <form id="chat-form" method="post" class="chat-form">
+    {% csrf_token %}
+    <div class="input-group">
+      <input type="text" id="message-input" class="form-control chat-input"
+             placeholder="Type your message..." required autocomplete="off">
+      <button class="btn chat-send-btn" id="send-button" type="submit" disabled>
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- Crisis Modal -->
+<div class="modal fade" id="crisisModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color: var(--coral-gentle); color: white;">
+        <h5 class="modal-title">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          Crisis Support
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>It looks like you're going through something serious. You're not alone.</p>
+        <ul class="mb-3">
+          <li><i class="fas fa-phone me-2"></i> Call a local helpline immediately</li>
+          <li><i class="fas fa-user-md me-2"></i> Talk to a university counselor</li>
+          <li><i class="fas fa-hands-helping me-2"></i> Reach out to someone you trust</li>
+        </ul>
+        <div class="text-center">
+          <a href="{% url 'emergency_contacts' %}" class="btn btn-danger">
+            <i class="fas fa-phone-alt me-2"></i>Emergency Contacts
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const chatForm = document.getElementById('chat-form');
+  const chatBox = document.getElementById('chat-box');
+  const input = document.getElementById('message-input');
+  const sendButton = document.getElementById('send-button');
+  const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
+  const crisisModal = new bootstrap.Modal(document.getElementById('crisisModal'));
+
+  function scrollToBottom() {
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  // Enable send button only when input has text
+  input.addEventListener('input', () => {
+    sendButton.disabled = input.value.trim().length === 0;
+  });
+
+  chatForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const message = input.value.trim();
+    if (!message) return;
+
+    // Add user message
+    const userHtml = `
+      <div class="chat-message mb-3 d-flex justify-content-end">
+        <div class="message-bubble user-message">
+          <div class="message-sender small mb-1">
+            <i class="fas fa-user me-1"></i>You
+          </div>
+          <div class="message-content">${message.replace(/\n/g, '<br>')}</div>
+          <div class="message-time small text-muted mt-1">Just now</div>
+        </div>
+      </div>`;
+    chatBox.insertAdjacentHTML('beforeend', userHtml);
+    input.value = '';
+    sendButton.disabled = true;
+    scrollToBottom();
+
+    // Add typing indicator
+    const typingId = `typing-${Date.now()}`;
+    chatBox.insertAdjacentHTML('beforeend', `
+      <div class="chat-message mb-3" id="${typingId}">
+        <div class="message-bubble bot-message">
+          <div class="message-sender small mb-1">
+            <i class="fas fa-robot me-1"></i>MindCare
+          </div>
+          <div class="message-content typing-indicator"><span></span><span></span><span></span></div>
+        </div>
+      </div>
+    `);
+    scrollToBottom();
+
+    fetch("{% url 'ajax_chat_reply' conversation.id %}", {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": csrf,
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: "message=" + encodeURIComponent(message)
+    })
+    .then(response => response.json())
+    .then(data => {
+      const typingEl = document.getElementById(typingId);
+      const botContainer = document.createElement('div');
+      botContainer.className = "chat-message mb-3";
+      botContainer.innerHTML = `
+        <div class="message-bubble bot-message">
+          <div class="message-sender small mb-1">
+            <i class="fas fa-robot me-1"></i>MindCare
+          </div>
+          <div class="message-content" id="bot-response-${typingId}"></div>
+          <div class="message-time small text-muted mt-1">Just now</div>
+        </div>`;
+      typingEl.replaceWith(botContainer);
+
+      const responseEl = document.getElementById(`bot-response-${typingId}`);
+      simulateTyping(responseEl, data.bot_response.replace(/\n/g, '<br>'), 15);
+
+      if (data.is_crisis) {
+        setTimeout(() => crisisModal.show(), 500);
+      }
+    })
+    .catch(error => {
+      console.error("Error:", error);
+      const errorHtml = `
+        <div class="chat-message mb-3">
+          <div class="message-bubble bot-message">
+            <div class="message-sender small mb-1">
+              <i class="fas fa-robot me-1"></i>MindCare
+            </div>
+            <div class="message-content text-danger">I'm having trouble responding. Please try again later.</div>
+          </div>
+        </div>`;
+      document.getElementById(typingId).outerHTML = errorHtml;
+      scrollToBottom();
+    });
+  });
+
+  // Simulate typing animation
+  function simulateTyping(element, text, speed = 20) {
+    let i = 0;
+    const interval = setInterval(() => {
+      element.innerHTML = text.substring(0, i++) + "<span class='blinking-cursor'>|</span>";
+      scrollToBottom();
+      if (i > text.length) {
+        clearInterval(interval);
+        element.innerHTML = text;
+      }
+    }, speed);
+  }
+
+  // Allow Shift+Enter for new lines
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      chatForm.dispatchEvent(new Event('submit'));
+    }
+  });
+
+  scrollToBottom();
+});
+</script>
+
+<!-- Typing Effect Styles -->
+<style>
+.typing-indicator span {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin: 0 2px;
+  background: #aaa;
+  border-radius: 50%;
+  animation: typing 1s infinite;
+}
+.typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+.typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typing {
+  0%, 80%, 100% { opacity: 0.3; transform: scale(1); }
+  40% { opacity: 1; transform: scale(1.3); }
+}
+
+.blinking-cursor {
+  animation: blink 1s steps(2, start) infinite;
+}
+@keyframes blink {
+  to { visibility: hidden; }
+}
+</style>
+{% endblock %}

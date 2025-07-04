@@ -1,0 +1,20 @@
+{
+  "National Helplines": [
+    {
+      "name": "Nigeria Suicide Prevention Initiative",
+      "phone": "+234 806 210 6493"
+    },
+    {
+      "name": "Mentally Aware Nigeria Initiative (MANI)",
+      "phone": "+234 901 678 6463",
+      "website": "https://mentallyaware.org"
+    }
+  ],
+  "University Counseling Centers": [
+    {
+      "name": "LASU Counseling Unit",
+      "phone": "08012345678",
+      "email": "counsel@lasu.edu.ng"
+    }
+  ]
+}

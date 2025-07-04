@@ -1,44 +1,83 @@
 {% extends 'base.html' %}
-{% block title %}Login{% endblock %}
-
+{% block title %}Login | MindCare{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Login to Your Account</h4>
-                </div>
-                <div class="card-body">
-                    <form method="post">
-                        {% csrf_token %}
-                        
-                        <!-- Username/Email Field -->
-                        <div class="mb-3">
-                            <label for="id_username" class="form-label">Email or Username</label>
-                            <input type="text" name="username" autofocus autocapitalize="none" autocomplete="username" 
-                                   maxlength="150" class="form-control" required id="id_username">
-                        </div>
-                        
-                        <!-- Password Field with Toggle -->
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between">
-                                <label for="id_password" class="form-label">Password</label>
-                                <button type="button" class="btn btn-sm btn-link toggle-password" data-target="id_password">
-                                    👁️ Show
-                                </button>
-                            </div>
-                            <input type="password" name="password" autocomplete="current-password" 
-                                   class="form-control" required id="id_password">
-                        </div>
-                        
-                        <button type="submit" class="btn btn-primary w-100">Login</button>
-                    </form>
+<div class="login-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6"> 
+                <!-- Login Card -->
+                <div class="login-card">
+                    <!-- Card Header -->
+                    <div class="login-card-header">
+                        <h3 class="mb-0">
+                            <i class="fas fa-user-circle me-2"></i>Welcome Back
+                        </h3>
+                    </div>
                     
-                    <div class="mt-3 text-center">
-                        <p class="mb-0">Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
-                        <p><a href="#">Forgot password?</a></p>
+                    <!-- Card Body -->
+                    <div class="login-card-body">
+                        <form method="post" class="needs-validation" novalidate>
+                            {% csrf_token %}
+                            
+                            <!-- Username/Email Field -->
+                            <div class="login-input-group">
+                                <label for="id_username" class="login-form-label">Email or Username</label>
+                                <div class="input-group">
+                                    <span class="input-group-text login-input-icon">
+                                        <i class="fas fa-envelope"></i>
+                                    </span>
+                                    <input type="text" name="username" class="form-control login-input" 
+                                           id="id_username" required placeholder="you@example.com">
+                                </div>
+                            </div>
+                            
+                            <!-- Password Field -->
+                            <div class="login-input-group">
+                                <label for="id_password" class="login-form-label">Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text login-input-icon">
+                                        <i class="fas fa-lock"></i>
+                                    </span>
+                                    <input type="password" name="password" class="form-control login-input password-input" 
+                                           id="id_password" required placeholder="••••••••">
+                                    <button type="button" class="btn password-toggle-btn toggle-password-btn">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Remember Me & Forgot Password -->
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="rememberMe">
+                                    <label class="form-check-label login-remember" for="rememberMe">
+                                        Remember me
+                                    </label>
+                                </div>
+                                <a href="#" class="login-footer-link small">
+                                    Forgot password?
+                                </a>
+                            </div>
+                            
+                            <!-- Submit Button -->
+                            <button type="submit" class="login-btn mb-3">
+                                <i class="fas fa-sign-in-alt me-2"></i>Login
+                            </button>
+                            
+                            <!-- Divider -->
+                            <div class="login-divider">
+                                <hr class="login-divider-line">
+                                <span class="login-divider-text">OR</span>
+                            </div>
+                            
+                            <!-- Registration Prompt -->
+                            <div class="text-center">
+                                <p class="small mb-0">Don't have an account? 
+                                    <a href="{% url 'register' %}" class="login-footer-link">Sign up</a>
+                                </p>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -47,39 +86,27 @@
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    // Toggle password visibility
-    document.querySelectorAll(".toggle-password").forEach(toggle => {
-        toggle.addEventListener("click", function () {
-            const input = document.getElementById(this.getAttribute('data-target'));
-            if (input.type === "password") {
-                input.type = "text";
-                this.innerHTML = "🙈 Hide";
+document.addEventListener("DOMContentLoaded", function() {
+    // Password toggle functionality
+    const toggleButtons = document.querySelectorAll('.toggle-password-btn');
+    
+    toggleButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const input = this.closest('.input-group').querySelector('.password-input');
+            const icon = this.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
             } else {
-                input.type = "password";
-                this.innerHTML = "👁️ Show";
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
             }
         });
     });
 });
 </script>
-
-<style>
-    .auth-container {
-        max-width: 500px;
-        margin: 0 auto;
-    }
-    
-    .toggle-password {
-        cursor: pointer;
-        text-decoration: none;
-    }
-    
-    .toggle-password:hover {
-        text-decoration: none;
-    }
-</style>
 {% endblock %}
 
 {% block footer %}
-{% endblock footer %}
+{% endblock %}

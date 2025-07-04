@@ -1,187 +1,257 @@
 <!-- templates/sidebar.html -->
-{% load static %}
-<style>
-  .chat-session-label {
-  position: relative;
-  padding: 0.5rem 0.75rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.chat-link {
-  flex: 1;
-  text-decoration: none;
-  color: black;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.options-button {
-  background: none;
-  border: none;
-  color: #aaa;
-  font-size: 1rem;
-  display: none;
-  cursor: pointer;
-}
-
-.chat-session-label:hover .options-button {
-  display: inline;
-}
-
-.dropdown-menu {
-  display: none;
-  position: absolute;
-  right: 0;
-  top: 2.2rem;
-  background: #222;
-  padding: 0.5rem;
-  border-radius: 6px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.25);
-  z-index: 10;
-}
-
-.chat-session-label:hover .dropdown-menu {
-  display: block;
-}
-
-.chat-group {
-  margin-bottom: 1rem;
-}
-
-.group-label {
-  font-size: 0.75rem;
-  color: #aaa;
-  text-transform: uppercase;
-  margin: 0.5rem 0;
-}
-
-</style>
-<aside class="sidebar{% if sidebar_collapsed %} collapsed{% endif %}{% if menu_active %} menu-active{% endif %}">
+<aside class="sidebar">
   <!-- Sidebar Header -->
-  <header class="sidebar-header">
-    <a href="#" class="header-logo">
-      <img src="{% static 'images/fav.png' %}" alt="Logo">
+  <div class="sidebar-header p-3 d-flex align-items-center justify-content-between">
+    <a href="{% url 'dashboard' %}" class="d-flex align-items-center text-decoration-none">
+      <img src="{% static 'images/logo-icon.png' %}" alt="MindCare" width="32" height="32">
+      <span class="sidebar-brand ms-2 d-none d-lg-inline" style="color: var(--teal-tranquil); font-weight: 700;">MindCare</span>
     </a>
-    <button class="toggler sidebar-toggler" aria-label="Toggle Sidebar">
-      <span class="material-symbols-rounded">chevron_left</span>
+    <button class="sidebar-toggle btn btn-link p-0" aria-label="Toggle Sidebar">
+      <i class="fas fa-chevron-left text-muted"></i>
     </button>
-    <button class="toggler menu-toggler" aria-label="Toggle Menu">
-      <span class="material-symbols-rounded">menu</span>
-    </button>
-  </header>
+  </div>
 
+  <!-- Sidebar Navigation -->
   <nav class="sidebar-nav">
-    <!-- Always-visible Primary Nav -->
-    <ul class="nav-list primary-nav">
+    <!-- Primary Navigation -->
+    <ul class="nav flex-column px-2">
       <li class="nav-item">
-        <a href="{% url 'dashboard' %}" class="nav-link">
-          <span class="nav-icon material-symbols-rounded">dashboard</span>
-          <span class="nav-label">Dashboard</span>
+        <a href="{% url 'dashboard' %}" class="nav-link d-flex align-items-center py-2 px-3 rounded">
+          <i class="fas fa-home me-3" style="color: var(--pink-soft); width: 24px; text-align: center;"></i>
+          <span class="nav-text">Dashboard</span>
         </a>
-        <span class="nav-tooltip">Dashboard</span>
       </li>
-
       <li class="nav-item">
-        <a href="#" class="nav-link">
-          <span class="nav-icon material-symbols-rounded">notifications</span>
-          <span class="nav-label">Notifications</span>
+        <a href="#" class="nav-link d-flex align-items-center py-2 px-3 rounded">
+          <i class="fas fa-bell me-3" style="color: var(--lavender-light); width: 24px; text-align: center;"></i>
+          <span class="nav-text">Notifications</span>
+          <span class="badge bg-danger ms-auto">3</span>
         </a>
-        <span class="nav-tooltip">Notifications</span>
       </li>
     </ul>
 
+    <!-- Chat Sessions Section -->
     {% if sidebar_mode == "chat" %}
-      <div class="sidebar-chat-history">
-            <a href="{% url 'start_new_chat' %}" class="nav-link">
-              <span class="nav-icon">💬</span>
-              <span class="nav-label">New Chat</span>
-            </a>
-        <h5 class="chat-history-title">Your Chats</h5>
+    <div class="px-3 py-2">
+      <a href="{% url 'start_new_chat' %}" class="btn w-100 mb-3" style="background-color: var(--pink-soft);">
+        <i class="fas fa-plus me-2"></i> New Chat
+      </a>
+      
+      <h6 class="sidebar-section-title d-flex align-items-center">
+        <i class="fas fa-history me-2" style="color: var(--teal-tranquil);"></i>
+        Your Chats
+      </h6>
 
-        {% if grouped_sessions %}
-          {% for label, sessions in grouped_sessions.items %}
-            {% if sessions %}
-              <div class="chat-group">
-                <div class="group-label">{{ label }}</div>
+      {% if grouped_sessions %}
+        {% for label, sessions in grouped_sessions.items %}
+          {% if sessions %}
+            <div class="chat-group mb-3">
+              <small class="text-uppercase text-muted d-block mb-1">{{ label }}</small>
+              <div class="list-group list-group-flush">
                 {% for session in sessions %}
-                  <div class="chat-session-label d-flex justify-between align-items-center{% if session.id|stringformat:"s" == current_session %} active-session{% endif %}">
-                    <a href="{% url 'load_session' session_id=session.id %}" class="chat-link">
-                      {{ session.title|default:"Untitled" }}
-                    </a>
-
-                    <div class="dropdown chat-options">
-                      <button class="options-button" title="More">
-                        <i class="fas fa-ellipsis-v"></i>
-                      </button>
-                      <div class="dropdown-menu">
-                        <form method="post" action="{% url 'rename_session' session_id=session.id %}">
-                          {% csrf_token %}
-                          <input name="title" value="{{ session.title }}" class="form-control form-control-sm mb-1" />
-                          <button type="submit" class="dropdown-item text-primary">
-                            <i class="fas fa-edit"></i> Rename
-                          </button>
-                        </form>
-                        <form method="post" action="{% url 'delete_session' session_id=session.id %}">
-                          {% csrf_token %}
-                          <button type="submit" class="dropdown-item text-danger">
-                            <i class="fas fa-trash-alt"></i> Delete
-                          </button>
-                        </form>
+                  <div class="chat-session-item list-group-item list-group-item-action border-0 py-2 px-2{% if session.id|stringformat:"s" == current_session %} active{% endif %}">
+                    <div class="d-flex align-items-center">
+                      <i class="fas fa-comment-dots me-2" style="color: var(--lavender-light);"></i>
+                      <span class="chat-title flex-grow-1">{{ session.title|default:"Untitled"|truncatechars:20 }}</span>
+                      <div class="dropdown">
+                        <button class="btn btn-sm btn-link text-muted p-0" data-bs-toggle="dropdown">
+                          <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                          <li>
+                            <form method="post" action="{% url 'rename_session' session_id=session.id %}" class="px-2 py-1">
+                              {% csrf_token %}
+                              <div class="input-group input-group-sm mb-2">
+                                <input type="text" name="title" value="{{ session.title }}" class="form-control">
+                                <button type="submit" class="btn" style="background-color: var(--teal-tranquil); color: white;">
+                                  <i class="fas fa-check"></i>
+                                </button>
+                              </div>
+                            </form>
+                          </li>
+                          <li>
+                            <form method="post" action="{% url 'delete_session' session_id=session.id %}">
+                              {% csrf_token %}
+                              <button type="submit" class="dropdown-item text-danger">
+                                <i class="fas fa-trash-alt me-2"></i> Delete
+                              </button>
+                            </form>
+                          </li>
+                        </ul>
                       </div>
                     </div>
+                    <small class="text-muted d-block ms-4">{{ session.created_at|date:"M d, H:i" }}</small>
                   </div>
                 {% endfor %}
               </div>
-            {% endif %}
-          {% endfor %}
-        {% else %}
-          <p class="no-chats">No chat sessions found.</p>
-        {% endif %}
-      </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        <div class="text-center py-3">
+          <i class="fas fa-comment-slash fa-2x mb-2" style="color: var(--gray-light);"></i>
+          <p class="small text-muted">No chat sessions yet</p>
+        </div>
+      {% endif %}
+    </div>
     {% else %}
       <!-- Quick Links -->
-      <div class="sidebar-quick-links">
-        <ul class="nav-list">
+      <div class="px-3 py-2">
+        <h6 class="sidebar-section-title">
+          <i class="fas fa-link me-2" style="color: var(--teal-tranquil);"></i>
+          Quick Links
+        </h6>
+        <ul class="nav flex-column">
           <li class="nav-item">
-            <a href="{% url 'edit_profile' %}" class="nav-link">
-              <span class="nav-icon">📝</span>
-              <span class="nav-label">Edit Profile</span>
+            <a href="{% url 'edit_profile' %}" class="nav-link d-flex align-items-center py-2 px-3 rounded">
+              <i class="fas fa-user-edit me-3" style="color: var(--pink-soft); width: 24px; text-align: center;"></i>
+              <span class="nav-text">Edit Profile</span>
             </a>
-            <span class="nav-tooltip">Edit Profile</span>
           </li>
           <li class="nav-item">
-            <a href="{% url 'start_new_chat' %}" class="nav-link">
-              <span class="nav-icon">💬</span>
-              <span class="nav-label">Open Chatbot</span>
+            <a href="{% url 'start_new_chat' %}" class="nav-link d-flex align-items-center py-2 px-3 rounded">
+              <i class="fas fa-robot me-3" style="color: var(--lavender-light); width: 24px; text-align: center;"></i>
+              <span class="nav-text">Chatbot</span>
             </a>
-            <span class="nav-tooltip">Chatbot</span>
           </li>
         </ul>
       </div>
     {% endif %}
 
-    <!-- Always-visible Secondary Nav -->
-    <ul class="nav-list secondary-nav">
-      <li class="nav-item">
-        <a href="{% url 'edit_profile' %}" class="nav-link">
-          <span class="nav-icon material-symbols-rounded">account_circle</span>
-          <span class="nav-label">Profile</span>
-        </a>
-        <span class="nav-tooltip">Profile</span>
-      </li>
-      <li class="nav-item">
-        <a href="{% url 'logout' %}" class="nav-link">
-          <span class="nav-icon material-symbols-rounded">logout</span>
-          <span class="nav-label">Logout</span>
-        </a>
-        <span class="nav-tooltip">Logout</span>
-      </li>
-    </ul>
+    <!-- Secondary Navigation -->
+    <div class="mt-auto px-3 py-3 border-top">
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a href="{% url 'edit_profile' %}" class="nav-link d-flex align-items-center py-2 px-3 rounded">
+            <i class="fas fa-user-circle me-3" style="color: var(--teal-tranquil); width: 24px; text-align: center;"></i>
+            <span class="nav-text">Profile</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{% url 'logout' %}" class="nav-link d-flex align-items-center py-2 px-3 rounded">
+            <i class="fas fa-sign-out-alt me-3" style="color: var(--coral-gentle); width: 24px; text-align: center;"></i>
+            <span class="nav-text">Logout</span>
+          </a>
+        </li>
+      </ul>
+    </div>
   </nav>
 </aside>
 
-<script src="{% static 'js/sidebar.js' %}"></script>
+<!-- Add to your style.css -->
+<style>
+  .sidebar {
+    width: 280px;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    background-color: var(--white-soft);
+    box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    transition: all 0.3s ease;
+  }
 
+  .sidebar-header {
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+
+  .sidebar-brand {
+    font-size: 1.1rem;
+  }
+
+  .sidebar-toggle {
+    color: var(--gray-dark);
+  }
+
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  .nav-link {
+    color: var(--gray-dark);
+    transition: all 0.2s ease;
+  }
+
+  .nav-link:hover {
+    background-color: rgba(245, 195, 191, 0.1);
+    color: var(--teal-tranquil);
+  }
+
+  .nav-link.active {
+    background-color: rgba(94, 200, 200, 0.1);
+    color: var(--teal-tranquil);
+    font-weight: 500;
+  }
+
+  .sidebar-section-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--gray-dark);
+    margin: 1rem 0 0.5rem;
+  }
+
+  .chat-session-item {
+    border-radius: 6px !important;
+    margin-bottom: 2px;
+  }
+
+  .chat-session-item:hover {
+    background-color: rgba(245, 195, 191, 0.1);
+  }
+
+  .chat-session-item.active {
+    background-color: rgba(94, 200, 200, 0.1);
+    border-left: 3px solid var(--teal-tranquil);
+  }
+
+  .chat-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .dropdown-menu {
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    padding: 0.5rem;
+  }
+
+  .dropdown-item {
+    border-radius: 4px;
+    padding: 0.375rem 0.75rem;
+  }
+
+  @media (max-width: 992px) {
+    .sidebar {
+      transform: translateX(-100%);
+    }
+    .sidebar.mobile-visible {
+      transform: translateX(0);
+    }
+  }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Toggle sidebar on mobile
+  const sidebar = document.querySelector('.sidebar');
+  const sidebarToggle = document.querySelector('.sidebar-toggle');
+  
+  sidebarToggle.addEventListener('click', function() {
+    sidebar.classList.toggle('mobile-visible');
+  });
+
+  // Initialize Bootstrap dropdowns
+  const dropdowns = document.querySelectorAll('.dropdown');
+  dropdowns.forEach(dropdown => {
+    new bootstrap.Dropdown(dropdown);
+  });
+});
+</script>

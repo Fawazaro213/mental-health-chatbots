@@ -1,0 +1,45 @@
+{% extends 'layout.html' %}
+{% block title %}Chat History - MindCare{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+  <h2 class="mb-4" style="color: var(--teal-tranquil);">
+    <i class="fas fa-history me-2"></i> Chat History
+  </h2>
+
+  {% if grouped_sessions %}
+    {% for label, sessions in grouped_sessions.items %}
+      {% if sessions %}
+        <div class="mb-4">
+          <h5 class="text-muted text-uppercase">{{ label }}</h5>
+          <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+            {% for session in sessions %}
+              <div class="col">
+                <div class="card shadow-sm border-0 h-100" style="background-color: var(--white-soft);">
+                  <div class="card-body">
+                    <h6 class="card-title mb-2 text-truncate" title="{{ session.title|default:'Untitled' }}">
+                      <i class="fas fa-comment-dots me-2" style="color: var(--lavender-light);"></i>
+                      {{ session.title|default:"Untitled" }}
+                    </h6>
+                    <p class="card-text text-muted small mb-3">
+                      Started: {{ session.started_at|date:"M d, Y H:i" }}
+                    </p>
+                    <a href="{% url 'chat_session' session.id %}" class="btn btn-sm" style="background-color: var(--pink-soft); color: white;">
+                      <i class="fas fa-play me-1"></i> Continue Chat
+                    </a>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  {% else %}
+    <div class="text-center py-5">
+      <i class="fas fa-comment-slash fa-3x mb-3" style="color: var(--gray-light);"></i>
+      <p class="text-muted">No previous chats yet.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

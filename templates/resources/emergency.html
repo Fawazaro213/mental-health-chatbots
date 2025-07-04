@@ -1,0 +1,277 @@
+{% extends "base.html" %}
+{% block title %}Emergency Contacts{% endblock %}
+
+{% block content %}
+<div class="emergency-container py-4" style="background-color: var(--gray-light); min-height: 80vh;">
+  <div class="container">
+    <!-- Page Header -->
+    <div class="emergency-header mb-4 text-center">
+      <h2 class="emergency-title">
+        <i class="fas fa-exclamation-triangle me-2" style="color: var(--coral-gentle);"></i>Emergency Contacts
+      </h2>
+      <p class="emergency-subtitle text-muted">
+        Immediate help and support when you need it most
+      </p>
+    </div>
+
+    <!-- Emergency Contact Cards -->
+    <div class="row">
+      {% for group, contacts in contacts.items %}
+      <div class="col-lg-6 mb-4">
+        <div class="emergency-group-card rounded-lg shadow-sm h-100">
+          <div class="emergency-group-header p-3" style="background-color: var(--teal-tranquil); color: white;">
+            <h5 class="mb-0">
+              <i class="fas fa-{{ group|lower }} me-2"></i>{{ group }}
+            </h5>
+          </div>
+          <div class="emergency-group-body p-3">
+            <div class="list-group list-group-flush">
+              {% for contact in contacts %}
+              <div class="emergency-contact-item list-group-item border-0 py-3">
+                <div class="d-flex align-items-start">
+                  <div class="emergency-contact-icon me-3" style="color: var(--pink-soft);">
+                    <i class="fas fa-{% if 'crisis' in group|lower %}heartbeat{% else %}phone-alt{% endif %} fa-2x"></i>
+                  </div>
+                  <div>
+                    <h6 class="emergency-contact-name mb-2" style="color: var(--gray-dark);">
+                      {{ contact.name }}
+                    </h6>
+                    <div class="emergency-contact-details">
+                      <p class="mb-1">
+                        <i class="fas fa-phone me-2 text-muted"></i>
+                        <a href="tel:{{ contact.phone }}" class="text-decoration-none" style="color: var(--gray-dark);">
+                          {{ contact.phone }}
+                        </a>
+                      </p>
+                      {% if contact.email %}
+                      <p class="mb-1">
+                        <i class="fas fa-envelope me-2 text-muted"></i>
+                        <a href="mailto:{{ contact.email }}" class="text-decoration-none" style="color: var(--gray-dark);">
+                          {{ contact.email }}
+                        </a>
+                      </p>
+                      {% endif %}
+                      {% if contact.website %}
+                      <p class="mb-0">
+                        <i class="fas fa-globe me-2 text-muted"></i>
+                        <a href="{{ contact.website }}" target="_blank" class="text-decoration-none" style="color: var(--lavender-light);">
+                          Visit Website
+                        </a>
+                      </p>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Additional Resources -->
+    <div class="emergency-footer text-center mt-4">
+      <p class="mb-2">
+        <strong>Remember:</strong> You're not alone. Help is available 24/7.
+      </p>
+      <a href="{% url 'resources' %}" class="btn mt-2" style="background-color: var(--pink-soft); color: var(--gray-dark);">
+        <i class="fas fa-book me-2"></i>View Mental Health Resources
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Add to your style.css -->
+<style>
+  .emergency-container {
+    display: flex;
+    align-items: center;
+  }
+
+  .emergency-title {
+    color: var(--gray-dark);
+    font-weight: 700;
+  }
+
+  .emergency-subtitle {
+    font-size: 1.1rem;
+  }
+
+  .emergency-group-card {
+    background-color: var(--white-soft);
+    border: 1px solid rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+  }
+
+  .emergency-group-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .emergency-group-header {
+    border-radius: 8px 8px 0 0 !important;
+  }
+
+  .emergency-contact-item {
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+
+  .emergency-contact-item:last-child {
+    border-bottom: none;
+  }
+
+  .emergency-contact-name {
+    font-weight: 600;
+  }
+
+  .emergency-contact-details a:hover {
+    color: var(--teal-tranquil) !important;
+    text-decoration: underline;
+  }
+
+  @media (max-width: 767.98px) {
+    .emergency-contact-icon {
+      font-size: 1.5rem;
+    }
+  }
+</style>
+{% endblock %}{% extends "base.html" %}
+{% block title %}Emergency Contacts | MindCare{% endblock %}
+
+{% block content %}
+<div class="emergency-container py-4" style="background-color: var(--gray-light); min-height: 80vh;">
+  <div class="container">
+    <!-- Page Header -->
+    <div class="emergency-header mb-4 text-center">
+      <h2 class="emergency-title">
+        <i class="fas fa-exclamation-triangle me-2" style="color: var(--coral-gentle);"></i>Emergency Contacts
+      </h2>
+      <p class="emergency-subtitle text-muted">
+        Immediate help and support when you need it most
+      </p>
+    </div>
+
+    <!-- Emergency Contact Cards -->
+    <div class="row">
+      {% for group, contacts in contacts.items %}
+      <div class="col-lg-6 mb-4">
+        <div class="emergency-group-card rounded-lg shadow-sm h-100">
+          <div class="emergency-group-header p-3" style="background-color: var(--teal-tranquil); color: white;">
+            <h5 class="mb-0">
+              <i class="fas fa-{{ group|lower }} me-2"></i>{{ group }}
+            </h5>
+          </div>
+          <div class="emergency-group-body p-3">
+            <div class="list-group list-group-flush">
+              {% for contact in contacts %}
+              <div class="emergency-contact-item list-group-item border-0 py-3">
+                <div class="d-flex align-items-start">
+                  <div class="emergency-contact-icon me-3" style="color: var(--pink-soft);">
+                    <i class="fas fa-{% if 'crisis' in group|lower %}heartbeat{% else %}phone-alt{% endif %} fa-2x"></i>
+                  </div>
+                  <div>
+                    <h6 class="emergency-contact-name mb-2" style="color: var(--gray-dark);">
+                      {{ contact.name }}
+                    </h6>
+                    <div class="emergency-contact-details">
+                      <p class="mb-1">
+                        <i class="fas fa-phone me-2 text-muted"></i>
+                        <a href="tel:{{ contact.phone }}" class="text-decoration-none" style="color: var(--gray-dark);">
+                          {{ contact.phone }}
+                        </a>
+                      </p>
+                      {% if contact.email %}
+                      <p class="mb-1">
+                        <i class="fas fa-envelope me-2 text-muted"></i>
+                        <a href="mailto:{{ contact.email }}" class="text-decoration-none" style="color: var(--gray-dark);">
+                          {{ contact.email }}
+                        </a>
+                      </p>
+                      {% endif %}
+                      {% if contact.website %}
+                      <p class="mb-0">
+                        <i class="fas fa-globe me-2 text-muted"></i>
+                        <a href="{{ contact.website }}" target="_blank" class="text-decoration-none" style="color: var(--lavender-light);">
+                          Visit Website
+                        </a>
+                      </p>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Additional Resources -->
+    <div class="emergency-footer text-center mt-4">
+      <p class="mb-2">
+        <strong>Remember:</strong> You're not alone. Help is available 24/7.
+      </p>
+      <a href="{% url 'resources' %}" class="btn mt-2" style="background-color: var(--pink-soft); color: var(--gray-dark);">
+        <i class="fas fa-book me-2"></i>View Mental Health Resources
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Add to your style.css -->
+<style>
+  .emergency-container {
+    display: flex;
+    align-items: center;
+  }
+
+  .emergency-title {
+    color: var(--gray-dark);
+    font-weight: 700;
+  }
+
+  .emergency-subtitle {
+    font-size: 1.1rem;
+  }
+
+  .emergency-group-card {
+    background-color: var(--white-soft);
+    border: 1px solid rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+  }
+
+  .emergency-group-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .emergency-group-header {
+    border-radius: 8px 8px 0 0 !important;
+  }
+
+  .emergency-contact-item {
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+
+  .emergency-contact-item:last-child {
+    border-bottom: none;
+  }
+
+  .emergency-contact-name {
+    font-weight: 600;
+  }
+
+  .emergency-contact-details a:hover {
+    color: var(--teal-tranquil) !important;
+    text-decoration: underline;
+  }
+
+  @media (max-width: 767.98px) {
+    .emergency-contact-icon {
+      font-size: 1.5rem;
+    }
+  }
+</style>
+{% endblock %}

@@ -5,21 +5,14 @@ from users.models import UniversityStudent
 from pathlib import Path
 
 class Command(BaseCommand):
-    help = 'Loads student data from JSON file into UniversityStudent model'
-
-    def add_arguments(self, parser):
-        parser.add_argument(
-            'json_file',
-            type=str,
-            help='Path to JSON file containing student records'
-        )
+    help = 'Loads student data from students.json (in project root) into UniversityStudent model'
 
     def handle(self, *args, **options):
-        json_file = options['json_file']
-        file_path = Path(json_file)
+        # Path to students.json in the same directory as manage.py
+        file_path = Path(__file__).resolve().parent.parent.parent.parent / 'students.json'
 
         if not file_path.exists():
-            self.stdout.write(self.style.ERROR(f"File not found: {json_file}"))
+            self.stdout.write(self.style.ERROR(f"File not found: {file_path}"))
             return
 
         try:
@@ -36,7 +29,6 @@ class Command(BaseCommand):
 
         for student in students:
             try:
-                # Clean and validate data
                 matric_number = student['matric_number'].strip().upper()
                 first_name = student['first_name'].strip()
                 last_name = student['last_name'].strip()

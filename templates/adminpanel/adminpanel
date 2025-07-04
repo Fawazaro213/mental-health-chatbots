@@ -1,0 +1,372 @@
+{% extends "layout.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard-container py-4" style="background-color: var(--gray-light); min-height: 100vh;">
+    <div class="container">
+        <!-- Dashboard Header -->
+        <div class="admin-header mb-4">
+            <h2 class="admin-title">
+                <i class="fas fa-tools me-2" style="color: var(--pink-soft);"></i>
+                Admin Dashboard
+            </h2>
+            <p class="admin-subtitle text-muted">
+                System overview and management tools
+            </p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row mb-4">
+            <div class="col-md-4 mb-3">
+                <div class="admin-stat-card" style="border-left: 4px solid var(--teal-tranquil);">
+                    <div class="stat-value">{{ total_users }}</div>
+                    <div class="stat-label">Total Users</div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="admin-stat-card" style="border-left: 4px solid var(--lavender-light);">
+                    <div class="stat-value">{{ active_users }}</div>
+                    <div class="stat-label">Active Users</div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="admin-stat-card" style="border-left: 4px solid var(--coral-gentle);">
+                    <div class="stat-value">{{ flagged_count }}</div>
+                    <div class="stat-label">Flagged Messages</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mood Analytics Section -->
+        <div class="admin-section mb-4 p-4 rounded" style="background-color: var(--white-soft);">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="admin-section-title">
+                    <i class="fas fa-chart-line me-2" style="color: var(--teal-tranquil);"></i>
+                    Mood Analytics (Anonymized)
+                </h4>
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-period active" data-period="7">7d</button>
+                    <button class="btn btn-period" data-period="30">30d</button>
+                    <button class="btn btn-period" data-period="90">90d</button>
+                </div>
+            </div>
+            <div class="chart-container" style="height: 300px;">
+                <canvas id="moodChart"></canvas>
+            </div>
+            <div class="text-end mt-2">
+                <small class="text-muted">Average: {{ avg_mood|floatformat:1 }}/10</small>
+            </div>
+        </div>
+
+        <!-- Active Users Section -->
+        <div class="admin-section mb-4 p-4 rounded" style="background-color: var(--white-soft);">
+            <h4 class="admin-section-title mb-3">
+                <i class="fas fa-users me-2" style="color: var(--lavender-light);"></i>
+                Active Users (With Consent)
+            </h4>
+            <div class="table-responsive">
+                <table class="table admin-table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Last Active</th>
+                            <th>Mood Checks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.last_login|date:"Y-m-d" }}</td>
+                            <td>{{ user.mood_count }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-3">
+                                No users with consent
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Flagged Messages Section -->
+        <div class="admin-section p-4 rounded" style="background-color: var(--white-soft);">
+            <h4 class="admin-section-title mb-3">
+                <i class="fas fa-flag me-2" style="color: var(--coral-gentle);"></i>
+                Flagged Messages
+            </h4>
+            <div class="table-responsive">
+                <table class="table admin-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Message Preview</th>
+                            <th>Reason</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for msg in flagged_messages %}
+                        <tr class="{% if not msg.reviewed %}unreviewed-message{% endif %}">
+                            <td>{{ msg.user.username|truncatechars:12 }}</td>
+                            <td>
+                                <span class="message-preview" data-fullmsg="{{ msg.message }}">
+                                    {{ msg.message|truncatechars:30 }}
+                                </span>
+                            </td>
+                            <td>{{ msg.reason }}</td>
+                            <td>{{ msg.flagged_at|date:"M d" }}</td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-action" 
+                                            data-msgid="{{ msg.id }}" 
+                                            data-action="approve">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="btn btn-action" 
+                                            data-msgid="{{ msg.id }}" 
+                                            data-action="review">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-action" 
+                                            data-msgid="{{ msg.id }}" 
+                                            data-action="delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-3">
+                                No flagged messages
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add to your style.css -->
+<style>
+    .admin-dashboard-container {
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .admin-title {
+        color: var(--gray-dark);
+        font-weight: 700;
+    }
+
+    .admin-stat-card {
+        background-color: var(--white-soft);
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .admin-stat-card .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--gray-dark);
+    }
+
+    .admin-stat-card .stat-label {
+        color: var(--gray-dark);
+        opacity: 0.8;
+        font-size: 0.9rem;
+    }
+
+    .admin-section {
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .admin-section-title {
+        color: var(--gray-dark);
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .admin-table {
+        font-size: 0.9rem;
+    }
+
+    .admin-table th {
+        background-color: var(--gray-light);
+        color: var(--gray-dark);
+    }
+
+    .unreviewed-message {
+        background-color: rgba(255, 184, 177, 0.2) !important;
+    }
+
+    .btn-period {
+        background-color: var(--white-soft);
+        color: var(--gray-dark);
+        border: 1px solid #dee2e6;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.8rem;
+    }
+
+    .btn-period.active {
+        background-color: var(--teal-tranquil);
+        color: white;
+        border-color: var(--teal-tranquil);
+    }
+
+    .btn-action {
+        background-color: var(--white-soft);
+        color: var(--gray-dark);
+        border: 1px solid #dee2e6;
+    }
+
+    .btn-action:hover {
+        background-color: #f1f1f1;
+    }
+
+    .message-preview {
+        cursor: pointer;
+        border-bottom: 1px dashed #999;
+    }
+
+    .chart-container {
+        position: relative;
+    }
+</style>
+
+<!-- Chart.js and Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Mood Chart Configuration
+    const ctx = document.getElementById('moodChart').getContext('2d');
+    
+    // Create gradient for chart line
+    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+    gradient.addColorStop(0, 'rgba(94, 200, 200, 0.8)');
+    gradient.addColorStop(1, 'rgba(245, 195, 191, 0.2)');
+
+    const moodChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [
+                {% for m in moods %}
+                    "{{ m.timestamp|date:'M d' }}",
+                {% endfor %}
+            ],
+            datasets: [{
+                label: 'Average Mood Score',
+                data: [
+                    {% for m in moods %}
+                        {{ m.score }},
+                    {% endfor %}
+                ],
+                fill: true,
+                backgroundColor: gradient,
+                borderColor: 'var(--teal-tranquil)',
+                borderWidth: 2,
+                pointBackgroundColor: 'var(--pink-soft)',
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    min: 0,
+                    max: 10,
+                    title: {
+                        display: true,
+                        text: 'Mood (1-10)',
+                        color: 'var(--gray-dark)'
+                    },
+                    grid: {
+                        color: 'rgba(0,0,0,0.05)'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    backgroundColor: 'var(--gray-dark)',
+                    titleFont: {
+                        weight: 'bold'
+                    },
+                    callbacks: {
+                        label: function(context) {
+                            return 'Avg Score: ' + context.parsed.y;
+                        }
+                    }
+                },
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+
+    // Time period selector functionality
+    const periodButtons = document.querySelectorAll('.btn-period');
+    periodButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Update active button
+            periodButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            
+            // In a real app, you would fetch filtered data from the server
+            // For now, we'll just update the chart with the full dataset
+            moodChart.update();
+        });
+    });
+
+    // Message preview tooltip
+    const messagePreviews = document.querySelectorAll('.message-preview');
+    messagePreviews.forEach(preview => {
+        preview.addEventListener('click', function() {
+            const fullMsg = this.getAttribute('data-fullmsg');
+            alert('Full message:\n\n' + fullMsg);
+        });
+    });
+
+    // Flagged message actions
+    const actionButtons = document.querySelectorAll('.btn-action');
+    actionButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const msgId = this.getAttribute('data-msgid');
+            const action = this.getAttribute('data-action');
+            
+            // In a real app, you would send this to the server
+            console.log(`Action: ${action} for message ${msgId}`);
+            
+            // Visual feedback
+            const row = this.closest('tr');
+            if (action === 'approve') {
+                row.classList.remove('unreviewed-message');
+                row.style.opacity = '0.6';
+            } else if (action === 'delete') {
+                row.style.display = 'none';
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

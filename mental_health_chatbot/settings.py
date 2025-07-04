@@ -26,8 +26,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'users.apps.UsersConfig',
-    # 'chatbot.apps.ChatbotConfig',
-    # 'crispy_forms', 
+    'chatbot.apps.ChatbotConfig',
+    'mood.apps.MoodConfig',
+    'resources.apps.ResourcesConfig',
+    'adminpanel.apps.AdminpanelConfig',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
@@ -45,7 +48,7 @@ ROOT_URLCONF = 'mental_health_chatbot.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ["templates"],
+        'DIRS': [ BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -71,7 +74,7 @@ DATABASES = {
 }
 
 AUTH_USER_MODEL = 'users.CustomUser'
-
+DEFAULT_FROM_EMAIL = 'support@mindcare.ng'
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'home'
 LOGIN_URL = 'login'
@@ -100,11 +103,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Africa/Lagos'
 
 USE_I18N = True
-
-USE_L10N = True
 
 USE_TZ = True
 
@@ -112,7 +113,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/stable/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# For production, you'll also need:
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# For development:
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 
 # For media files (user avatars)
 MEDIA_URL = '/media/'

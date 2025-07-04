@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Privacy Policys{% endblock %}
+
+{% block content %}
+<div class="legal-container py-5" style="background-color: var(--gray-light);">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="legal-card shadow-sm rounded-lg p-4 p-md-5">
+          <div class="legal-header text-center mb-5">
+            <h1 class="legal-title">
+              <i class="fas fa-shield-alt me-2" style="color: var(--teal-tranquil);"></i>Privacy Policy
+            </h1>
+            <p class="legal-subtitle text-muted">Last Updated: {% now "F j, Y" %}</p>
+          </div>
+
+          <div class="legal-content">
+            <section class="mb-4">
+              <h2 class="legal-section-title">
+                <i class="fas fa-info-circle me-2" style="color: var(--lavender-light);"></i>1. Information We Collect
+              </h2>
+              <p>MindCare collects the following types of information when you use our services:</p>
+              <ul>
+                <li><strong>Personal Information:</strong> Name, email address, and university details during registration</li>
+                <li><strong>Usage Data:</strong> How you interact with our chatbot and resources</li>
+                <li><strong>Technical Information:</strong> Device type, browser, and IP address for analytics</li>
+              </ul>
+            </section>
+
+            <section class="mb-4">
+              <h2 class="legal-section-title">
+                <i class="fas fa-lock me-2" style="color: var(--lavender-light);"></i>2. How We Use Your Information
+              </h2>
+              <p>We use your information to:</p>
+              <ul>
+                <li>Provide and personalize our mental health services</li>
+                <li>Improve chatbot responses and resource recommendations</li>
+                <li>Ensure platform security and prevent misuse</li>
+                <li>Communicate important service updates</li>
+              </ul>
+            </section>
+
+            <section class="mb-4">
+              <h2 class="legal-section-title">
+                <i class="fas fa-share-alt me-2" style="color: var(--lavender-light);"></i>3. Information Sharing
+              </h2>
+              <p>We <strong>do not</strong> sell your data. Limited sharing occurs with:</p>
+              <ul>
+                <li>University counseling services (with your consent)</li>
+                <li>Emergency services if risk of harm is detected</li>
+                <li>Service providers under strict confidentiality agreements</li>
+              </ul>
+            </section>
+
+            <section class="mb-4">
+              <h2 class="legal-section-title">
+                <i class="fas fa-cog me-2" style="color: var(--lavender-light);"></i>4. Your Rights
+              </h2>
+              <p>You can:</p>
+              <ul>
+                <li>Access and request a copy of your data</li>
+                <li>Request correction of inaccurate information</li>
+                <li>Delete your account and associated data</li>
+                <li>Opt-out of non-essential communications</li>
+              </ul>
+            </section>
+
+            <div class="legal-contact mt-5 p-4 rounded" style="background-color: rgba(94, 200, 200, 0.1);">
+              <h3 class="h5">
+                <i class="fas fa-question-circle me-2" style="color: var(--teal-tranquil);"></i>Questions?
+              </h3>
+              <p class="mb-0">Contact our Data Protection Officer at <a href="mailto:privacy@mindcare.example" style="color: var(--pink-soft);">privacy@mindcare.example</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .legal-card {
+    background-color: var(--white-soft);
+  }
+  
+  .legal-title {
+    color: var(--gray-dark);
+    font-weight: 700;
+  }
+  
+  .legal-section-title {
+    font-size: 1.25rem;
+    color: var(--gray-dark);
+    margin-bottom: 1rem;
+  }
+  
+  .legal-content ul {
+    padding-left: 1.5rem;
+  }
+  
+  .legal-content li {
+    margin-bottom: 0.5rem;
+  }
+</style>
+{% endblock %}

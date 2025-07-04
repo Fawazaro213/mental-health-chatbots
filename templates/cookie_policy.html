@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}Cookie Policy{% endblock %}
+
+{% block content %}
+<div class="legal-container py-5" style="background-color: var(--gray-light);">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="legal-card shadow-sm rounded-lg p-4 p-md-5">
+          <div class="legal-header text-center mb-5">
+            <h1 class="legal-title">
+              <i class="fas fa-cookie-bite me-2" style="color: var(--teal-tranquil);"></i>Cookie Policy
+            </h1>
+            <p class="legal-subtitle text-muted">Last Updated: {% now "F j, Y" %}</p>
+          </div>
+
+          <div class="legal-content">
+            <section class="mb-4">
+              <h2 class="legal-section-title">
+                <i class="fas fa-info-circle me-2" style="color: var(--lavender-light);"></i>1. What Are Cookies?
+              </h2>
+              <p>Cookies are small text files stored on your device when you visit websites. MindCare uses cookies to:</p>
+              <ul>
+                <li>Keep you signed in during your session</li>
+                <li>Remember your preferences</li>
+                <li>Understand how you use our services</li>
+              </ul>
+            </section>
+
+            <section class="mb-4">
+              <h2 class="legal-section-title">
+                <i class="fas fa-list me-2" style="color: var(--lavender-light);"></i>2. Types of Cookies We Use
+              </h2>
+              <div class="table-responsive">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Cookie Type</th>
+                      <th>Purpose</th>
+                      <th>Duration</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>Essential</strong></td>
+                      <td>Core functionality (login, security)</td>
+                      <td>Session</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Preference</strong></td>
+                      <td>Remember language/accessibility settings</td>
+                      <td>30 days</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Analytics</strong></td>
+                      <td>Improve our services (anonymous)</td>
+                      <td>1 year</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <section class="mb-4">
+              <h2 class="legal-section-title">
+                <i class="fas fa-sliders-h me-2" style="color: var(--lavender-light);"></i>3. Managing Cookies
+              </h2>
+              <p>You can control cookies through:</p>
+              <ul>
+                <li>Browser settings (disable/all/delete)</li>
+                <li>Our cookie consent banner when first visiting</li>
+                <li>Third-party opt-out tools for analytics</li>
+              </ul>
+              <p class="mt-3"><em>Note: Disabling essential cookies may break site functionality.</em></p>
+            </section>
+
+            <div class="legal-contact mt-5 p-4 rounded" style="background-color: rgba(94, 200, 200, 0.1);">
+              <h3 class="h5">
+                <i class="fas fa-question-circle me-2" style="color: var(--teal-tranquil);"></i>Need Help?
+              </h3>
+              <p class="mb-0">Contact us at <a href="mailto:support@mindcare.example" style="color: var(--pink-soft);">support@mindcare.example</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .legal-card {
+    background-color: var(--white-soft);
+  }
+  
+  .legal-title {
+    color: var(--gray-dark);
+    font-weight: 700;
+  }
+  
+  .legal-section-title {
+    font-size: 1.25rem;
+    color: var(--gray-dark);
+    margin-bottom: 1rem;
+  }
+  
+  .table th {
+    background-color: var(--lavender-light);
+    color: white;
+  }
+</style>
+{% endblock %}

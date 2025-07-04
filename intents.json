@@ -1,0 +1,8 @@
+{
+  "crisis_intervention": ["suicide", "kill myself", "end it all", "want to die"],
+  "anxiety_support": ["anxious", "anxiety", "nervous", "panicked"],
+  "depression_support": ["depressed", "sad", "hopeless", "empty"],
+  "stress_management": ["stress", "overwhelmed", "pressure", "burnout"],
+  "sleep_issues": ["sleep", "insomnia", "tired", "restless"],
+  "gratitude": ["thank", "appreciate", "grateful", "blessed"]
+}

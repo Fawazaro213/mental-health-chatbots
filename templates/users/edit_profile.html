@@ -1,0 +1,249 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+<style>
+    .profile-edit-container {
+        background-color: var(--gray-light);
+        min-height: calc(100vh - 120px);
+    }
+
+    .profile-edit-title {
+        color: var(--gray-dark);
+        font-weight: 700;
+    }
+
+    .profile-picture-card {
+        background-color: var(--white-soft);
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        height: 100%;
+    }
+
+    .profile-avatar {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--white-soft);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .profile-avatar-upload-btn {
+        background-color: var(--pink-soft);
+        color: var(--gray-dark);
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .profile-avatar-upload-btn:hover {
+        background-color: var(--coral-gentle);
+    }
+
+    .profile-edit-form {
+        background-color: var(--white-soft);
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .profile-section {
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        margin-bottom: 1.5rem;
+    }
+
+    .profile-section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+    }
+
+    .profile-section-title {
+        color: var(--gray-dark);
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+    }
+
+    .profile-form-label {
+        font-weight: 500;
+        color: var(--gray-dark);
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: var(--lavender-light);
+        box-shadow: 0 0 0 0.25rem rgba(195, 177, 225, 0.25);
+        outline: none;
+    }
+
+    textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .form-switch .form-check-input {
+        width: 3em;
+        height: 1.5em;
+        margin-left: 0;
+    }
+
+    .profile-form-actions {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .profile-save-btn {
+        background-color: var(--teal-tranquil);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .profile-save-btn:hover {
+        background-color: #4ab6b6;
+        transform: translateY(-2px);
+    }
+
+    .profile-cancel-btn {
+        background-color: var(--white-soft);
+        color: var(--gray-dark);
+        border: 1px solid #dee2e6;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .profile-cancel-btn:hover {
+        background-color: #f1f1f1;
+    }
+</style>
+
+<div class="profile-edit-container py-5">
+  <div class="container">
+    <!-- Header Section -->
+    <div class="text-center mb-5">
+      <h2 class="fw-bold text-dark">
+        <i class="fas fa-user-edit me-2" style="color: var(--pink-soft);"></i>
+        Edit Profile
+      </h2>
+      <p class="text-muted">Update your personal information and preferences</p>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="profile-edit-form shadow p-4 bg-white rounded-4">
+      {% csrf_token %}
+      <div class="row g-4">
+        <!-- Left Column: Avatar -->
+        <div class="col-lg-4 text-center">
+          <div class="bg-light p-4 rounded-4 h-100 d-flex flex-column justify-content-center align-items-center">
+            <div class="mb-3">
+              <img
+                id="avatar-preview"
+                src="{% if form.instance.avatar %}{{ form.instance.avatar.url }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}"
+                alt="Current profile picture"
+                class="img-thumbnail rounded-circle shadow"
+                style="width: 160px; height: 160px; object-fit: cover;"
+              >
+            </div>
+            <label class="btn btn-outline-primary btn-sm">
+              <i class="fas fa-camera me-2"></i>Change Photo
+              {{ form.avatar }}
+            </label>
+            <small class="text-muted mt-2">JPG, GIF or PNG. Max size 2MB</small>
+          </div>
+        </div>
+
+        <!-- Right Column: Form Fields -->
+        <div class="col-lg-8">
+          <!-- Personal Info -->
+          <div class="mb-4">
+            <h5 class="text-primary fw-semibold mb-3">
+              <i class="fas fa-info-circle me-2 text-info"></i> Personal Information
+            </h5>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="{{ form.preferred_name.id_for_label }}" class="form-label">Preferred Name</label>
+                <input type="text" class="form-control" name="preferred_name" id="{{ form.preferred_name.id_for_label }}"
+                  value="{{ form.preferred_name.value|default_if_none:'' }}">
+              </div>
+              <div class="col-md-6">
+                <label for="{{ form.emergency_contact.id_for_label }}" class="form-label">Emergency Contact</label>
+                <input type="tel" class="form-control" name="emergency_contact" id="{{ form.emergency_contact.id_for_label }}"
+                  value="{{ form.emergency_contact.value|default_if_none:'' }}">
+              </div>
+            </div>
+          </div>
+
+          <!-- About Section -->
+          <div class="mb-4">
+            <h5 class="text-primary fw-semibold mb-3">
+              <i class="fas fa-pencil-alt me-2 text-secondary"></i> About You
+            </h5>
+            <label for="{{ form.bio.id_for_label }}" class="form-label">Bio</label>
+            <textarea name="bio" id="{{ form.bio.id_for_label }}" rows="5" class="form-control">{{ form.bio.value|default_if_none:'' }}</textarea>
+            <small class="text-muted">Tell us a bit about yourself (optional)</small>
+          </div>
+
+          <!-- Privacy Settings -->
+          <div class="mb-4">
+            <h5 class="text-primary fw-semibold mb-3">
+              <i class="fas fa-shield-alt me-2 text-warning"></i> Privacy Settings
+            </h5>
+            <div class="form-check form-switch">
+              <input type="checkbox" name="allow_data_collection" class="form-check-input" id="{{ form.allow_data_collection.id_for_label }}"
+                {% if form.allow_data_collection.value %}checked{% endif %}>
+              <label class="form-check-label ms-2" for="{{ form.allow_data_collection.id_for_label }}">
+                Share anonymized data to improve MindCare
+              </label>
+              <small class="text-muted d-block">Helps us enhance our services while protecting your identity</small>
+            </div>
+          </div>
+
+          <!-- Buttons -->
+          <div class="d-flex gap-3 mt-4">
+            <button type="submit" class="btn btn-success px-4">
+              <i class="fas fa-save me-2"></i> Save Changes
+            </button>
+            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary px-4">
+              <i class="fas fa-times me-2"></i> Cancel
+            </a>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const avatarInput = document.getElementById('id_avatar');
+    const avatarPreview = document.getElementById('avatar-preview');
+
+    if (avatarInput) {
+      avatarInput.addEventListener('change', function () {
+        if (this.files && this.files[0]) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            avatarPreview.src = e.target.result;
+          }
+          reader.readAsDataURL(this.files[0]);
+        }
+      });
+    }
+  });
+</script>
+{% endblock %}

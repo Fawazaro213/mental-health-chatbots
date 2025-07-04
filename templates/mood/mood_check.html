@@ -1,0 +1,198 @@
+{% extends "layout.html" %}
+{% block title %}Mood Check{% endblock %}
+
+{% block content %}
+<div class="mood-check-container py-4" style="background-color: var(--gray-light); min-height: 80vh;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <!-- Mood Check Card -->
+                <div class="mood-card shadow-sm rounded-lg">
+                    <!-- Card Header -->
+                    <div class="mood-card-header p-4 text-center" style="background-color: var(--lavender-light);">
+                        <h2 class="mb-0 text-white">
+                            <i class="fas fa-heartbeat me-2"></i>How Are You Feeling Today?
+                        </h2>
+                    </div>
+                    
+                    <!-- Card Body -->
+                    <div class="mood-card-body p-4 p-md-5">
+                        <form method="post" class="mood-form">
+                            {% csrf_token %}
+                            
+                            <!-- Mood Score -->
+                            <div class="mood-score-section mb-4">
+                                <label for="id_score" class="mood-form-label">
+                                    <i class="fas fa-chart-line me-2" style="color: var(--teal-tranquil);"></i>
+                                    Rate Your Mood (1-10)
+                                </label>
+                                <div class="mood-slider-container mt-3 mb-2">
+                                    <input type="range" class="form-range mood-slider" min="1" max="10" step="1" 
+                                           id="id_score" name="score" value="{{ form.score.value|default:'5' }}">
+                                    <div class="mood-slider-labels d-flex justify-content-between">
+                                        <span>😢 1</span>
+                                        <span>2</span>
+                                        <span>3</span>
+                                        <span>4</span>
+                                        <span>5</span>
+                                        <span>6</span>
+                                        <span>7</span>
+                                        <span>8</span>
+                                        <span>9</span>
+                                        <span>10 😊</span>
+                                    </div>
+                                </div>
+                                <div class="mood-score-display text-center mt-3">
+                                    <span class="mood-score-value display-4 fw-bold" style="color: var(--pink-soft);">
+                                        {{ form.score.value|default:'5' }}
+                                    </span>
+                                    <span class="text-muted">/10</span>
+                                </div>
+                            </div>
+
+                            <!-- Mood Note -->
+                            <div class="mood-note-section mb-4">
+                                <label for="id_note" class="mood-form-label">
+                                    <i class="fas fa-pencil-alt me-2" style="color: var(--teal-tranquil);"></i>
+                                    Optional Notes
+                                </label>
+                                <textarea class="form-control mood-note" id="id_note" name="note" rows="4" 
+                                          placeholder="What's contributing to your mood today?">{{ form.note.value|default:'' }}</textarea>
+                            </div>
+
+                            <!-- Form Actions -->
+                            <div class="mood-form-actions text-center">
+                                <button type="submit" class="btn mood-submit-btn">
+                                    <i class="fas fa-check-circle me-2"></i>Submit Mood Check
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Mood History Link -->
+                <div class="text-center mt-4">
+                    <a href="{% url 'mood_history' %}" class="mood-history-link">
+                        <i class="fas fa-history me-2"></i>View Your Mood History
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add to your style.css -->
+<style>
+    .mood-check-container {
+        display: flex;
+        align-items: center;
+    }
+
+    .mood-card {
+        background-color: var(--white-soft);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .mood-card-header {
+        border-radius: 12px 12px 0 0;
+    }
+
+    .mood-form-label {
+        font-weight: 500;
+        color: var(--gray-dark);
+        margin-bottom: 0.75rem;
+        display: block;
+    }
+
+    .mood-slider-container {
+        padding: 0 1rem;
+    }
+
+    .mood-slider {
+        width: 100%;
+        height: 10px;
+        -webkit-appearance: none;
+        background: linear-gradient(to right, 
+            var(--coral-gentle), 
+            var(--pink-soft), 
+            var(--lavender-light), 
+            var(--teal-tranquil));
+        border-radius: 5px;
+        outline: none;
+    }
+
+    .mood-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background: var(--gray-dark);
+        cursor: pointer;
+        border: 3px solid var(--white-soft);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .mood-slider-labels {
+        font-size: 0.8rem;
+        color: var(--gray-dark);
+        padding: 0 0.5rem;
+    }
+
+    .mood-score-display {
+        margin-bottom: 1.5rem;
+    }
+
+    .mood-note {
+        width: 100%;
+        padding: 1rem;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .mood-note:focus {
+        border-color: var(--lavender-light);
+        box-shadow: 0 0 0 0.25rem rgba(195, 177, 225, 0.25);
+        outline: none;
+    }
+
+    .mood-submit-btn {
+        background-color: var(--teal-tranquil);
+        color: white;
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 50px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .mood-submit-btn:hover {
+        background-color: #4ab6b6;
+        transform: translateY(-2px);
+    }
+
+    .mood-history-link {
+        color: var(--lavender-light);
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .mood-history-link:hover {
+        color: var(--teal-tranquil);
+        text-decoration: underline;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Update displayed score when slider moves
+    const moodSlider = document.getElementById('id_score');
+    const moodScoreDisplay = document.querySelector('.mood-score-value');
+    
+    moodSlider.addEventListener('input', function() {
+        moodScoreDisplay.textContent = this.value;
+    });
+});
+</script>
+{% endblock %}

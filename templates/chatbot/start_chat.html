@@ -1,0 +1,237 @@
+{% extends 'layout.html' %}
+{% block title %}Start New Conversation{% endblock %}
+
+{% block content %}
+<div class="new-chat-container py-4" style="background-color: var(--gray-light); min-height: 80vh;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- New Chat Card -->
+                <div class="new-chat-card shadow-sm rounded-lg">
+                    <!-- Card Header -->
+                    <div class="new-chat-header p-4 text-center" style="background-color: var(--teal-tranquil);">
+                        <h3 class="mb-0 text-white">
+                            <i class="fas fa-comment-dots me-2"></i>Start New Conversation
+                        </h3>
+                    </div>
+                    
+                    <!-- Card Body -->
+                    <div class="new-chat-body p-4 p-md-5">
+                        <div class="new-chat-intro mb-4 text-center">
+                            <p>Begin a new conversation with MindCare's mental health assistant. You can discuss anything on your mind.</p>
+                        </div>
+
+                        <form method="post" class="new-chat-form" id="chatStartForm">
+                            {% csrf_token %}
+
+                            <!-- Topic Suggestion Dropdown -->
+                            <div class="mb-4">
+                                <label for="topic_suggestion" class="new-chat-label">
+                                    <i class="fas fa-lightbulb me-2" style="color: var(--pink-soft);"></i>
+                                    Choose a Topic (optional)
+                                </label>
+                                <select id="topic_suggestion" class="form-select new-chat-select" onchange="autofillTitle(this)">
+                                    <option value="">Select a topic</option>
+                                    <option value="Stress and Anxiety">Stress and Anxiety</option>
+                                    <option value="Mood Changes">Mood Changes</option>
+                                    <option value="Relationships">Relationships</option>
+                                    <option value="Academic Pressure">Academic Pressure</option>
+                                    <option value="Sleep Issues">Sleep Issues</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <small class="form-text text-muted">This helps tailor our conversation to your needs</small>
+                            </div>
+
+                            <!-- Custom Title Input -->
+                            <div class="mb-4">
+                                <label for="id_title" class="new-chat-label">
+                                    <i class="fas fa-pen me-2" style="color: var(--lavender-light);"></i>
+                                    Or Enter a Custom Title
+                                </label>
+                                <input type="text" name="title" id="id_title" class="form-control new-chat-textarea" placeholder="Optional custom title">
+                            </div>
+
+                            <!-- Initial Message -->
+                            <div class="mb-4">
+                                <label for="id_message" class="new-chat-label">
+                                    <i class="fas fa-comment me-2" style="color: var(--lavender-light);"></i>
+                                    Your Message
+                                </label>
+                                <textarea name="message" id="id_message" 
+                                          class="form-control new-chat-textarea" rows="5"
+                                          placeholder="What would you like to talk about today?" required></textarea>
+                                <small class="form-text text-muted">You can also start with just a greeting</small>
+                            </div>
+
+                            <!-- Privacy Reminder -->
+                            <div class="privacy-reminder p-3 mb-4 rounded" style="background-color: rgba(245, 195, 191, 0.2);">
+                                <i class="fas fa-lock me-2" style="color: var(--teal-tranquil);"></i>
+                                Remember: All conversations are confidential and encrypted.
+                            </div>
+
+                            <!-- Form Actions -->
+                            <div class="new-chat-actions text-center">
+                                <button type="submit" class="btn new-chat-submit-btn" id="startChatBtn" disabled>
+                                    <i class="fas fa-comments me-2"></i>Start Conversation
+                                </button>
+                                <a href="#" class="btn new-chat-cancel-btn">
+                                    <i class="fas fa-history me-2"></i>View Past Chats
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Quick Help Section -->
+                <div class="quick-help mt-4 p-4 rounded" style="background-color: var(--white-soft);">
+                    <h5 class="mb-3">
+                        <i class="fas fa-question-circle me-2" style="color: var(--coral-gentle);"></i>
+                        Need inspiration for topics?
+                    </h5>
+                    <ul class="quick-help-list">
+                        <li><i class="fas fa-check-circle me-2" style="color: var(--lavender-light);"></i> "I've been feeling anxious about exams"</li>
+                        <li><i class="fas fa-check-circle me-2" style="color: var(--lavender-light);"></i> "How can I improve my sleep routine?"</li>
+                        <li><i class="fas fa-check-circle me-2" style="color: var(--lavender-light);"></i> "I'm struggling with loneliness"</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JS Section -->
+<script>
+    // Autofill title input from dropdown
+    function autofillTitle(selectElement) {
+        const selected = selectElement.value;
+        const titleInput = document.getElementById('id_title');
+        if (selected && !titleInput.value) {
+            titleInput.value = selected;
+        }
+    }
+
+    // Enable button only when message textarea has content
+    document.addEventListener("DOMContentLoaded", function () {
+        const messageField = document.getElementById("id_message");
+        const startBtn = document.getElementById("startChatBtn");
+
+        messageField.addEventListener("input", function () {
+            if (messageField.value.trim().length > 0) {
+                startBtn.removeAttribute("disabled");
+            } else {
+                startBtn.setAttribute("disabled", "true");
+            }
+        });
+    });
+</script>
+<!-- Add to your style.css -->
+<style>
+    .new-chat-container {
+        display: flex;
+        align-items: center;
+    }
+
+    .new-chat-card {
+        background-color: var(--white-soft);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .new-chat-header {
+        border-radius: 12px 12px 0 0;
+    }
+
+    .new-chat-intro {
+        color: var(--gray-dark);
+        font-size: 1.1rem;
+    }
+
+    .new-chat-label {
+        font-weight: 500;
+        color: var(--gray-dark);
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .new-chat-select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .new-chat-select:focus {
+        border-color: var(--lavender-light);
+        box-shadow: 0 0 0 0.25rem rgba(195, 177, 225, 0.25);
+        outline: none;
+    }
+
+    .new-chat-textarea {
+        width: 100%;
+        padding: 1rem;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .new-chat-textarea:focus {
+        border-color: var(--lavender-light);
+        box-shadow: 0 0 0 0.25rem rgba(195, 177, 225, 0.25);
+        outline: none;
+    }
+
+    .privacy-reminder {
+        color: var(--gray-dark);
+        font-size: 0.9rem;
+    }
+
+    .new-chat-actions {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .new-chat-submit-btn {
+        background-color: var(--pink-soft);
+        color: var(--gray-dark);
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .new-chat-submit-btn:hover {
+        background-color: var(--coral-gentle);
+        transform: translateY(-2px);
+    }
+
+    .new-chat-cancel-btn {
+        background-color: var(--white-soft);
+        color: var(--gray-dark);
+        border: 1px solid #dee2e6;
+        padding: 0.75rem 1.5rem;
+        border-radius: 50px;
+        transition: all 0.3s ease;
+    }
+
+    .new-chat-cancel-btn:hover {
+        background-color: #f8f9fa;
+    }
+
+    .quick-help {
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .quick-help-list {
+        list-style: none;
+        padding-left: 0;
+    }
+
+    .quick-help-list li {
+        padding: 0.25rem 0;
+    }
+</style>
+{% endblock %}

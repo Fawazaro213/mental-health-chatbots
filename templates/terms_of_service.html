@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Terms of Service | MindCare{% endblock %}
+
+{% block content %}
+<div class="legal-container py-5" style="background-color: var(--gray-light);">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="legal-card shadow-sm rounded-lg p-4 p-md-5">
+          <div class="legal-header text-center mb-5">
+            <h1 class="legal-title">
+              <i class="fas fa-file-contract me-2" style="color: var(--teal-tranquil);"></i>Terms of Service
+            </h1>
+            <p class="legal-subtitle text-muted">Effective Date: {% now "F j, Y" %}</p>
+          </div>
+
+          <div class="legal-content">
+            <section class="mb-4">
+              <h2 class="legal-section-title">
+                <i class="fas fa-user me-2" style="color: var(--lavender-light);"></i>1. Account Requirements
+              </h2>
+              <p>To use MindCare, you must:</p>
+              <ul>
+                <li>Be a currently enrolled university student</li>
+                <li>Provide accurate registration information</li>
+                <li>Maintain confidentiality of your credentials</li>
+                <li>Be at least 18 years old</li>
+              </ul>
+            </section>
+
+            <section class="mb-4">
+              <h2 class="legal-section-title">
+                <i class="fas fa-exclamation-triangle me-2" style="color: var(--lavender-light);"></i>2. Appropriate Use
+              </h2>
+              <p>You agree not to:</p>
+              <ul>
+                <li>Misuse the chatbot for non-mental health purposes</li>
+                <li>Attempt to reverse-engineer our AI systems</li>
+                <li>Harass other users or staff</li>
+                <li>Use automated tools to access our services</li>
+              </ul>
+            </section>
+
+            <section class="mb-4">
+              <h2 class="legal-section-title">
+                <i class="fas fa-heartbeat me-2" style="color: var(--lavender-light);"></i>3. Mental Health Disclaimer
+              </h2>
+              <p>MindCare provides:</p>
+              <ul>
+                <li><strong>Supportive resources</strong>, not medical advice</li>
+                <li><strong>AI-generated responses</strong>, not therapy</li>
+                <li><strong>Emergency escalation</strong> when risk is detected</li>
+              </ul>
+              <p class="mt-3">For clinical care, please contact your university health services.</p>
+            </section>
+
+            <section class="mb-4">
+              <h2 class="legal-section-title">
+                <i class="fas fa-gavel me-2" style="color: var(--lavender-light);"></i>4. Termination
+              </h2>
+              <p>We may suspend accounts for:</p>
+              <ul>
+                <li>Violation of these terms</li>
+                <li>Misrepresentation of identity</li>
+                <li>Harmful or illegal activities</li>
+              </ul>
+            </section>
+
+            <div class="legal-contact mt-5 p-4 rounded" style="background-color: rgba(94, 200, 200, 0.1);">
+              <h3 class="h5">
+                <i class="fas fa-envelope me-2" style="color: var(--teal-tranquil);"></i>Contact Us
+              </h3>
+              <p class="mb-0">Email <a href="mailto:legal@mindcare.example" style="color: var(--pink-soft);">legal@mindcare.example</a> with questions</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .legal-card {
+    background-color: var(--white-soft);
+  }
+  
+  .legal-title {
+    color: var(--gray-dark);
+    font-weight: 700;
+  }
+  
+  .legal-section-title {
+    font-size: 1.25rem;
+    color: var(--gray-dark);
+    margin-bottom: 1rem;
+  }
+  
+  .legal-content ul {
+    padding-left: 1.5rem;
+  }
+</style>
+{% endblock %}

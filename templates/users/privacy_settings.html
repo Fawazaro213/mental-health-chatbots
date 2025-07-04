@@ -1,0 +1,147 @@
+{% extends "layout.html" %}
+{% block title %}Privacy Settings{% endblock %}
+
+{% block content %}
+<div class="privacy-container py-4" style="background-color: var(--gray-light); min-height: 80vh;">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <!-- Privacy Settings Card -->
+        <div class="privacy-card shadow-sm rounded-lg">
+          <!-- Card Header -->
+          <div class="privacy-card-header p-4" style="background-color: var(--teal-tranquil);">
+            <h2 class="mb-0 text-white">
+              <i class="fas fa-shield-alt me-2"></i>Privacy & Consent Settings
+            </h2>
+          </div>
+          
+          <!-- Card Body -->
+          <div class="privacy-card-body p-4 p-md-5">
+            <div class="privacy-intro mb-4">
+              <p>MindCare uses <strong>anonymous data</strong> to improve support tools and understand student wellness trends. You control whether your data is included.</p>
+            </div>
+
+            <!-- Consent Form -->
+            <form method="post" class="privacy-form">
+              {% csrf_token %}
+              
+              <div class="privacy-form-group mb-4">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="id_data_consent" name="data_consent" 
+                         {% if form.data_consent.value %}checked{% endif %}>
+                  <label class="form-check-label" for="id_data_consent">
+                    <strong>Share anonymized data to improve MindCare</strong>
+                  </label>
+                </div>
+                <small class="text-muted">Helps us enhance our services while protecting your identity</small>
+              </div>
+
+              <div class="privacy-form-actions">
+                <button type="submit" class="btn privacy-save-btn">
+                  <i class="fas fa-save me-2"></i>Save Preferences
+                </button>
+              </div>
+            </form>
+
+            <!-- Data Collection Info -->
+            <div class="privacy-info mt-5 pt-4 border-top">
+              <h5 class="mb-3">
+                <i class="fas fa-info-circle me-2" style="color: var(--pink-soft);"></i>
+                What data is collected?
+              </h5>
+              <ul class="privacy-data-list">
+                <li>
+                  <i class="fas fa-chart-line me-2" style="color: var(--lavender-light);"></i>
+                  Your mood check-ins (anonymized)
+                </li>
+                <li>
+                  <i class="fas fa-clock me-2" style="color: var(--lavender-light);"></i>
+                  Your usage patterns (e.g. time of day)
+                </li>
+                <li>
+                  <i class="fas fa-user-secret me-2" style="color: var(--lavender-light);"></i>
+                  No personal identifiers are included in analysis
+                </li>
+                <li>
+                  <i class="fas fa-comment-slash me-2" style="color: var(--lavender-light);"></i>
+                  Your messages are never shared or used to train models
+                </li>
+              </ul>
+              
+              <div class="privacy-note mt-4 p-3 rounded" style="background-color: rgba(245, 195, 191, 0.2);">
+                <i class="fas fa-sync-alt me-2" style="color: var(--pink-soft);"></i>
+                You can change these settings anytime.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add to your style.css -->
+<style>
+  .privacy-container {
+    display: flex;
+    align-items: center;
+  }
+
+  .privacy-card {
+    background-color: var(--white-soft);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .privacy-card-header {
+    border-radius: 12px 12px 0 0;
+  }
+
+  .privacy-intro {
+    font-size: 1.1rem;
+    line-height: 1.6;
+  }
+
+  .privacy-form-group {
+    padding: 1.5rem;
+    background-color: rgba(245, 195, 191, 0.1);
+    border-radius: 8px;
+  }
+
+  .form-switch .form-check-input {
+    width: 3em;
+    height: 1.5em;
+    cursor: pointer;
+  }
+
+  .privacy-save-btn {
+    background-color: var(--teal-tranquil);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+
+  .privacy-save-btn:hover {
+    background-color: #4ab6b6;
+    transform: translateY(-2px);
+  }
+
+  .privacy-data-list {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .privacy-data-list li {
+    padding: 0.5rem 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .privacy-note {
+    font-size: 0.9rem;
+  }
+</style>
+{% endblock %}

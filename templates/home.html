@@ -1,22 +1,42 @@
-<!-- filepath: c:\Users\Other\Desktop\mental-health-chatbot\mental_health_chatbot\templates\home.html -->
 {% extends 'base.html' %}
-
+{% load static %}
 {% block title %}Home{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <!-- Hero Section -->
-    <section class="text-center mb-5">
-        <h1 class="display-4 fw-bold mb-3">
-            <i class="fa-solid fa-heart-pulse text-primary"></i> Welcome to Your Mental Health Companion
+<div>
+<!-- Hero Section with Image Background -->
+<section class="hero-section position-relative mb-5" style="height: 80vh; min-height: 500px;">
+  <!-- Background Image with Overlay -->
+  <div class="hero-background position-absolute w-100 h-100" 
+       style="background: linear-gradient(rgba(45, 55, 72, 0.7), rgba(94, 200, 200, 0.3)), 
+              url('{% static 'images/hero-image.jpeg' %}') no-repeat center center; 
+              background-size: cover;">
+  </div>
+  
+  <!-- Content Container -->
+  <div class="container position-relative h-100 d-flex align-items-center">
+    <div class="row justify-content-center text-white w-100">
+      <div class="col-lg-8">
+        <h1 class="display-3 fw-bold mb-4">
+          <i class="fas fa-heart-pulse me-2" style="color: var(--pink-soft);"></i> 
+          Your Mental Health Companion
         </h1>
-        <p class="lead text-muted mb-4">
-            Your confidential, AI-powered assistant for mental wellness. We're here to listen, support, and guide you—anytime, anywhere.
+        <p class="lead mb-5 fs-4" style="text-shadow: 1px 1px 3px rgba(0,0,0,0.3);">
+          Confidential AI support for stress, anxiety, and emotional wellness - available 24/7
         </p>
-        <a href="#" class="btn btn-lg btn-primary shadow">
-            <i class="fa-solid fa-comments"></i> Start Chatting
-        </a>
-    </section>
+        <div class="d-flex justify-content-center gap-3">
+          <a href="{#" class="btn btn-lg shadow-sm" 
+             style="background-color: var(--pink-soft); color: var(--gray-dark);">
+            <i class="fas fa-comment-dots me-2"></i> Start Chatting
+          </a>
+          <a href="#how-it-works" class="btn btn-lg btn-outline-light shadow-sm">
+            <i class="fas fa-info-circle me-2"></i> Learn More
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
     <!-- Features Section -->
     <section class="row text-center mb-5">
@@ -111,7 +131,7 @@
     </section>
 
     <!-- Call to Action -->
-    <section class="text-center">
+    <section class="text-center mb-5">
         <h2 class="fw-bold mb-3">Ready to Take a Step Toward Wellness?</h2>
         <p class="lead text-muted mb-4">Start a conversation now or explore our resources to support your mental health journey.</p>
         <a href="#" class="btn btn-lg btn-success shadow">

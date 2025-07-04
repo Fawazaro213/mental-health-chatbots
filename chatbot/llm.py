@@ -1,114 +1,140 @@
-# # Welcome to Smart Career Counselor
+import os
+import json
+import datetime
+from dotenv import load_dotenv
+from azure.ai.inference import ChatCompletionsClient
+from azure.ai.inference.models import SystemMessage, UserMessage
+from azure.core.credentials import AzureKeyCredential
 
-# import os
-# from dotenv import load_dotenv
+# Load environment variables
+load_dotenv()
 
-# from azure.ai.inference import ChatCompletionsClient
-# from azure.ai.inference.models import SystemMessage, UserMessage
-# from azure.core.credentials import AzureKeyCredential
+# Azure Inference credentials
+AZURE_API_TOKEN = os.getenv("AZURE_MENTALHEALTH_TOKEN") 
+AZURE_ENDPOINT = "https://models.github.ai/inference"
+AZURE_MODEL = "openai/gpt-4.1" 
 
-# # Load environment variables
-# load_dotenv()
+client = ChatCompletionsClient(
+    endpoint=AZURE_ENDPOINT,
+    credential=AzureKeyCredential(AZURE_API_TOKEN),
+)
 
-# # Azure Inference credentials
-# AZURE_API_TOKEN = os.getenv("GITHUB_TOKEN")
-# AZURE_ENDPOINT = "https://models.github.ai/inference"
-# AZURE_MODEL = "openai/gpt-4.1"
+# Load intent keywords from external JSON
+with open("intents.json", "r", encoding="utf-8") as f:
+    INTENT_KEYWORDS = json.load(f)
 
-# # Create the Azure client
-# client = ChatCompletionsClient(
-#     endpoint=AZURE_ENDPOINT,
-#     credential=AzureKeyCredential(AZURE_API_TOKEN),
-# )
+# Profanity blacklist (customizable)
+BLACKLIST_WORDS = ["damn", "shit", "fuck", "bastard"]
 
-# def detect_intent(user_input):
-#     user_input = user_input.lower()
-#     if "career" in user_input or "job" in user_input:
-#         return "career_advice"
-#     elif "skills" in user_input or "learn" in user_input:
-#         return "skill_recommendation"
-#     elif "thanks" in user_input:
-#         return "gratitude"
-#     else:
-#         return "general"
+# -------- Intent Detection -------- #
+def detect_intent(user_input):
+    user_input = user_input.lower()
+    for intent, keywords in INTENT_KEYWORDS.items():
+        if any(keyword in user_input for keyword in keywords):
+            return intent
+    return "general_support"
 
-# def generate_prompt(user_input):
-#     intent = detect_intent(user_input)
+# -------- Prompt Engineering -------- #
+def generate_prompt(user_input):
+    intent = detect_intent(user_input)
 
-#     if intent == "career_advice":
-#         return f"Suggest some good career options for: {user_input}"
-#     elif intent == "skill_recommendation":
-#         return f"What skills should someone develop if they want to pursue: {user_input}?"
-#     elif intent == "gratitude":
-#         return "You're welcome! Do you have more questions about careers?"
-#     else:
-#         return user_input
+    if intent == "crisis_intervention":
+        return (
+            "URGENT: User expressed suicidal ideation. "
+            "Provide immediate crisis support using this template:\n"
+            "1. Validate feelings: 'I hear how much pain you're in...'\n"
+            "2. Safety check: 'Are you somewhere safe right now?'\n"
+            "3. Emergency resources: Share suicide hotline numbers\n"
+            "4. Offer next-step support\n"
+            "--- User input: " + user_input
+        )
+    elif intent == "anxiety_support":
+        return (
+            "Provide CBT-based anxiety support:\n"
+            "1. Psychoeducation about anxiety\n"
+            "2. Grounding techniques (5-4-3-2-1 method)\n"
+            "3. Cognitive restructuring example\n"
+            "4. Short breathing exercise\n"
+            "--- User input: " + user_input
+        )
+    elif intent == "depression_support":
+        return (
+            "Offer depression support using behavioral activation:\n"
+            "1. Validate experience\n"
+            "2. Small activity suggestion\n"
+            "3. Social connection idea\n"
+            "4. Hope-instilling message\n"
+            "--- User input: " + user_input
+        )
+    else:
+        return (
+            "Provide general mental health support with:\n"
+            "1. Active listening reflection\n"
+            "2. Open-ended question\n"
+            "3. Psychoeducation snippet\n"
+            "4. Resource suggestion\n"
+            "--- User input: " + user_input
+        )
 
-# def query_llm(prompt):
-#     system_prompt = (
-#         "You are **Smart Career Counselor** – a friendly, professional, and knowledgeable AI-powered assistant. "
-#         "You're always available 24/7 to help users with career advice in an empathetic and encouraging tone.\n\n"
-#         "Your role is to:\n"
-#         "- 💬 Understand users' interests, skills, and educational background\n"
-#         "- 🧭 Recommend personalized career paths and learning resources\n"
-#         "- ⚙️ Provide continuous and scalable support with clarity and friendliness\n\n"
-#         "Always greet users warmly, break down complex ideas simply, and include relevant emojis or bullet points when helpful. "
-#         "Ensure your responses are practical, encouraging, and concise."
-#         "Avoid using Markdown or formatting symbols like asterisks (*), underscores (_), or backticks (`).\n"
-#     )
+# -------- Azure LLM Query -------- #
+def query_llm(prompt):
+    system_prompt = (
+        "You are **MindCare Companion** - an AI mental health supporter for students. "
+        "You combine professional therapeutic techniques with compassionate support.\n\n"
+        "Core Protocols:\n"
+        "1. 🚨 CRISIS: Detect urgency, provide resources, escalate if needed\n"
+        "2. 🧠 CBT: Use cognitive restructuring, behavioral activation\n"
+        "3. 🧘 MINDFULNESS: Offer grounding techniques when appropriate\n"
+        "4. 📊 PROGRESS: Track user patterns (but don't diagnose)\n\n"
+        "Communication Rules:\n"
+        "- Always validate before problem-solving\n"
+        "- Use simple, jargon-free language\n"
+        "- Limit responses to 3-5 sentences\n"
+        "- Ask open-ended questions\n"
+        "- Never make clinical diagnoses\n"
+    )
 
-#     try:
-#         response = client.complete(
-#             messages=[
-#                 SystemMessage(system_prompt),
-#                 UserMessage(prompt),
-#             ],
-#             temperature=0.8,
-#             top_p=1,
-#             model=AZURE_MODEL,
-#         )
+    try:
+        response = client.complete(
+            messages=[
+                SystemMessage(system_prompt),
+                UserMessage(prompt),
+            ],
+            temperature=0.7,
+            top_p=0.9,
+            model=AZURE_MODEL,
+        )
+        content = response.choices[0].message.content
+        return apply_safety_filters(content)
+    except Exception as e:
+        return "I'm having technical difficulties. Please try again later."
 
-#         return response.choices[0].message.content
+# -------- Safety Filter -------- #
+def apply_safety_filters(response):
+    for word in BLACKLIST_WORDS:
+        response = response.replace(word, "[censored]")
+    return response
 
-#     except Exception as e:
-#         return f"❗️ Request failed: {str(e)}"
+# -------- Interaction Logger -------- #
+def log_interaction(user_input, intent, response):
+    with open("interaction_log.txt", "a", encoding="utf-8") as f:
+        f.write(
+            f"[{datetime.datetime.now()}] "
+            f"Intent: {intent} | Input: {user_input} | Response: {response[:100]}...\n"
+        )
 
-# def chatbot_response(user_input, is_first_message=False):
-#     prompt = generate_prompt(user_input)
+# -------- Main Chatbot Function -------- #
+def chatbot_response(user_input, is_first_message=False):
+    intent = detect_intent(user_input)
+    prompt = generate_prompt(user_input)
+    response = query_llm(prompt)
 
-#     greeting = (
-#         "👋 Welcome to **Smart Career Counselor**!\n"
-#         "Your personalized AI assistant for career guidance, available 24/7.\n\n"
-#     ) if is_first_message else ""
+    log_interaction(user_input, intent, response)
 
-#     return greeting + query_llm(prompt)
+    greeting = (
+        "🌱 Welcome to MindCare Companion. I'm here to listen and support you.\n"
+        "This is a safe space to share what's on your mind.\n\n"
+        "Remember: I'm not a replacement for professional care.\n\n"
+    ) if is_first_message else ""
 
-# def generate_chat_title(user_message):
-#     system_prompt = (
-#         "You are a smart assistant that creates short and relevant chat titles.\n"
-#         "Given a user's first message in a conversation, generate a concise title (3 to 6 words max).\n"
-#         "Avoid punctuation. Do not include quotes or greetings. Be specific but brief.\n"
-#         "Output only the title."
-#     )
-
-#     try:
-#         response = client.complete(
-#             messages=[
-#                 SystemMessage(system_prompt),
-#                 UserMessage(user_message),
-#             ],
-#             temperature=0.5,
-#             top_p=1,
-#             model=AZURE_MODEL,
-#         )
-
-#         return response.choices[0].message.content.strip()
-
-#     except Exception as e:
-#         return f"❗️ Failed to generate title: {str(e)}"
-
-
-# # Example test
-# # if __name__ == "__main__":
-# #     user_input = input("You: ")
-# #     print("Bot:", chatbot_response(user_input))
+    return greeting + response

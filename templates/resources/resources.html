@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% block title %}Mental Health Resources{% endblock %}
+
+{% block content %}
+<div class="resources-container py-4" style="background-color: var(--gray-light); min-height: 80vh;">
+  <div class="container">
+    <!-- Page Header -->
+    <div class="resources-header mb-5 text-center">
+      <h2 class="resources-title">
+        <i class="fas fa-book-open me-2" style="color: var(--teal-tranquil);"></i>Mental Health Resources
+      </h2>
+      <p class="resources-subtitle text-muted">
+        Curated materials to support your mental wellness journey
+      </p>
+    </div>
+
+    <!-- Resource Categories -->
+    <div class="row">
+      {% for category in categories %}
+      <div class="col-lg-6 mb-4">
+        <div class="resource-category-card rounded-lg shadow-sm h-100">
+          <div class="resource-category-header p-3" style="background-color: var(--lavender-light); color: white;">
+            <h5 class="mb-0">
+              <i class="fas fa-{{ category.icon|default:'folder' }} me-2"></i>{{ category.name }}
+            </h5>
+          </div>
+          <div class="resource-category-body p-3">
+            {% if category.mentalhealthresource_set.all %}
+            <div class="list-group list-group-flush">
+              {% for resource in category.mentalhealthresource_set.all %}
+              <div class="resource-item list-group-item border-0 py-3">
+                <div class="d-flex align-items-center">
+                  <div class="resource-icon me-3" style="color: var(--coral-gentle);">
+                    {% if resource.file.url|lower|slice:'-4:' == '.pdf' %}
+                    <i class="fas fa-file-pdf fa-lg"></i>
+                    {% elif resource.file.url|lower|slice:'-4:' == '.doc' or resource.file.url|lower|slice:'-5:' == '.docx' %}
+                    <i class="fas fa-file-word fa-lg"></i>
+                    {% else %}
+                    <i class="fas fa-file-alt fa-lg"></i>
+                    {% endif %}
+                  </div>
+                  <div class="flex-grow-1">
+                    <a href="{{ resource.file.url }}" target="_blank" class="resource-link stretched-link">
+                      {{ resource.title }}
+                    </a>
+                    {% if resource.description %}
+                    <p class="resource-description small text-muted mb-0 mt-1">
+                      {{ resource.description }}
+                    </p>
+                    {% endif %}
+                  </div>
+                  <div class="resource-action ms-2">
+                    <i class="fas fa-external-link-alt text-muted"></i>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-4">
+              <i class="fas fa-inbox fa-2x mb-2 text-muted"></i>
+              <p class="text-muted mb-0">No resources available in this category</p>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Additional Help Section -->
+    <div class="resources-footer text-center mt-5">
+      <div class="card border-0 shadow-sm" style="background-color: var(--white-soft);">
+        <div class="card-body py-4">
+          <h5 class="mb-3">
+            <i class="fas fa-question-circle me-2" style="color: var(--pink-soft);"></i>Need More Help?
+          </h5>
+          <p class="mb-3">Explore our additional support services and resources</p>
+          <a href="{% url 'emergency_contacts' %}" class="btn me-2" style="background-color: var(--teal-tranquil); color: white;">
+            <i class="fas fa-phone-alt me-2"></i>Emergency Contacts
+          </a>
+          <a href="#" class="btn" style="background-color: var(--pink-soft); color: var(--gray-dark);">
+            <i class="fas fa-comments me-2"></i>Chat with Support
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add to your style.css -->
+<style>
+  .resources-container {
+    display: flex;
+    align-items: center;
+  }
+
+  .resources-title {
+    color: var(--gray-dark);
+    font-weight: 700;
+  }
+
+  .resources-subtitle {
+    font-size: 1.1rem;
+  }
+
+  .resource-category-card {
+    background-color: var(--white-soft);
+    border: 1px solid rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+  }
+
+  .resource-category-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .resource-category-header {
+    border-radius: 8px 8px 0 0 !important;
+  }
+
+  .resource-item {
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    transition: background-color 0.2s ease;
+  }
+
+  .resource-item:hover {
+    background-color: rgba(245, 195, 191, 0.1) !important;
+  }
+
+  .resource-item:last-child {
+    border-bottom: none;
+  }
+
+  .resource-link {
+    color: var(--gray-dark);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .resource-link:hover {
+    color: var(--teal-tranquil);
+  }
+
+  .resource-description {
+    line-height: 1.4;
+  }
+
+  @media (max-width: 767.98px) {
+    .resource-icon {
+      font-size: 1.25rem;
+    }
+  }
+</style>
+{% endblock %}

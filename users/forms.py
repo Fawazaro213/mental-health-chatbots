@@ -3,6 +3,8 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.core.exceptions import ValidationError
 from .models import *
+from django.contrib.auth import get_user_model
+
 
 class StudentVerificationForm(forms.Form):
     matric_number = forms.CharField(
@@ -12,29 +14,29 @@ class StudentVerificationForm(forms.Form):
             'placeholder': 'e.g. 210591032',
             'class': 'form-control',
             'autofocus': 'autofocus'
-        }),
-        help_text="Enter your official university matriculation number"
+        })
     )
-    
+
     def clean_matric_number(self):
         matric_number = self.cleaned_data.get('matric_number').upper().strip()
         try:
-            return UniversityStudent.objects.get(matric_number=matric_number)
+            student = UniversityStudent.objects.get(matric_number=matric_number)
+            
+            # Check if already registered
+            if hasattr(student, 'linked_profile'):
+                raise ValidationError(
+                    "This matric number has already been used to create an account. "
+                    "If you've forgotten your password, use the reset option."
+                )
+            return student
+
         except UniversityStudent.DoesNotExist:
             raise ValidationError(
                 "This matric number was not found in our records. "
-                "Please check the number or contact your university administration."
+                "Please check it or contact your university admin."
             )
 
 class StudentRegistrationForm(UserCreationForm):
-    username = forms.CharField(
-        widget=forms.TextInput(attrs={
-            'placeholder': 'Choose a username',
-            'class': 'form-control'
-        }),
-        label='Username',
-    )
-    
     password1 = forms.CharField(
         widget=forms.PasswordInput(attrs={
             'placeholder': 'Create a password',
@@ -53,7 +55,7 @@ class StudentRegistrationForm(UserCreationForm):
     
     class Meta:
         model = CustomUser
-        fields = ('username', 'password1', 'password2')
+        fields = ('password1', 'password2')
     
     def __init__(self, *args, student_data=None, **kwargs):
         super().__init__(*args, **kwargs)
@@ -61,50 +63,82 @@ class StudentRegistrationForm(UserCreationForm):
         
     def save(self, commit=True):
         user = super().save(commit=False)
+
         if self.student_data:
-            user.email = self.student_data['email']
-            user.first_name = self.student_data['first_name']
-            user.last_name = self.student_data['last_name']
-            user.is_student = True
-            user.university = "Lagos State University"
-            
+            user.username = self.student_data['matric_number'].upper()
+
             if commit:
                 user.save()
-                # Create or update user profile
-                profile = user.userprofile
-                profile.middle_name = self.student_data.get('middle_name', '')
-                profile.faculty = self.student_data['faculty']
-                profile.department = self.student_data['department']
-                profile.year_admitted = self.student_data['year_admitted']
-                profile.matric_number = self.student_data['matric_number']
-                profile.save()
+
+                profile, _ = UserProfile.objects.get_or_create(user=user)
+
+                try:
+                    student_obj = UniversityStudent.objects.get(
+                        matric_number=self.student_data['matric_number']
+                    )
+                    profile.student_record = student_obj
+                    profile.save()
+                except UniversityStudent.DoesNotExist:
+                    pass
+
         return user
 
 
-
 class CustomAuthenticationForm(AuthenticationForm):
-    username = forms.CharField(label='Email or Username')
-    
-    def clean_username(self):
-        username = self.cleaned_data.get('username')
-        if '@' in username:
-            from django.contrib.auth import get_user_model
-            User = get_user_model()
-            try:
-                username = User.objects.get(email=username).username
-            except User.DoesNotExist:
-                pass
-        return username
+    username = forms.CharField(
+        label='Matric Number',
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Enter your matric number',
+            'class': 'form-control',
+        })
+    )
 
-class UserProfileForm(forms.ModelForm):
+    password = forms.CharField(
+        label='Password',
+        widget=forms.PasswordInput(attrs={
+            'placeholder': 'Enter your password',
+            'class': 'form-control',
+        })
+    )
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username', '').strip().upper()
+
+        # Ensure matric number exists as a username
+        User = get_user_model()
+        if not User.objects.filter(username=username).exists():
+            raise ValidationError("This matric number is not registered.")
+        return username
+    
+
+class CombinedProfileForm(forms.ModelForm):
+    # Fields from CustomUser
+    preferred_name = forms.CharField(required=False, max_length=100)
+    emergency_contact = forms.CharField(required=False, max_length=100)
+    allow_data_collection = forms.BooleanField(required=False)
+    
     class Meta:
         model = UserProfile
-        fields = ['bio', 'avatar']
-        widgets = {
-            'bio': forms.Textarea(attrs={'rows': 4, 'cols': 40}),
-        }
+        fields = ['avatar', 'bio']
 
-class UserUpdateForm(forms.ModelForm):
-    class Meta:
-        model = CustomUser
-        fields = ['first_name', 'last_name', 'email']
+    def __init__(self, *args, **kwargs):
+        self.user_instance = kwargs.pop('user_instance')
+        super().__init__(*args, **kwargs)
+
+        # Initialize fields from CustomUser
+        self.fields['preferred_name'].initial = self.user_instance.preferred_name
+        self.fields['emergency_contact'].initial = self.user_instance.emergency_contact
+        self.fields['allow_data_collection'].initial = self.user_instance.allow_data_collection
+
+    def save(self, commit=True):
+        profile = super().save(commit=False)
+        if commit:
+            profile.save()
+            # Save related CustomUser fields
+            self.user_instance.preferred_name = self.cleaned_data['preferred_name']
+            self.user_instance.emergency_contact = self.cleaned_data['emergency_contact']
+            self.user_instance.allow_data_collection = self.cleaned_data['allow_data_collection']
+            self.user_instance.save()
+        return profile
+
+    
