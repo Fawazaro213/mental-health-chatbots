@@ -25,7 +25,7 @@
           Confidential AI support for stress, anxiety, and emotional wellness - available 24/7
         </p>
         <div class="d-flex justify-content-center gap-3">
-          <a href="{#" class="btn btn-lg shadow-sm" 
+          <a href="{% url 'start_chat' %}" class="btn btn-lg shadow-sm" 
              style="background-color: var(--pink-soft); color: var(--gray-dark);">
             <i class="fas fa-comment-dots me-2"></i> Start Chatting
           </a>
@@ -134,7 +134,7 @@
     <section class="text-center mb-5">
         <h2 class="fw-bold mb-3">Ready to Take a Step Toward Wellness?</h2>
         <p class="lead text-muted mb-4">Start a conversation now or explore our resources to support your mental health journey.</p>
-        <a href="#" class="btn btn-lg btn-success shadow">
+        <a href="{% url 'start_chat' %}" class="btn btn-lg btn-success shadow">
             <i class="fa-solid fa-comments"></i> Chat Now
         </a>
     </section>
