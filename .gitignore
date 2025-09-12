@@ -11,8 +11,8 @@ ENV/
 .pip/
 
 # Django migrations
-**/migrations/
-!**/migrations/__init__.py
+# **/migrations/
+# !**/migrations/__init__.py
 
 # SQLite database
 *.sqlite3

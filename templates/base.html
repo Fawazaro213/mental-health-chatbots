@@ -32,11 +32,11 @@
         <!-- Dropdown for profile image or fallback icon -->
         <div class="dropdown">
           <a class="dropdown-toggle d-flex align-items-center" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-          {% if profile and profile.avatar %}
-            <img src="{{ profile.avatar.url }}" alt="Profile Image" class="rounded-circle" width="40" height="40" style="object-fit: cover;">
-          {% else %}
-            <i class="fas fa-user-circle fa-2x text-secondary"></i>
-          {% endif %}
+            {% if profile and profile.avatar %}
+              <img src="{{ profile.avatar.url }}" alt="Profile Image" class="rounded-circle" width="40" height="40" style="object-fit: cover;">
+            {% else %}
+              <i class="fas fa-user-circle fa-2x text-secondary"></i>
+            {% endif %}
           </a>
           <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
             <li><a class="dropdown-item" href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
@@ -44,10 +44,15 @@
             <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
           </ul>
         </div>
+      {% else %}
+        <!-- Show Register and Login links for unauthenticated users -->
+        <a href="{% url 'register' %}" class="btn btn-outline-primary me-2">Register</a>
+        <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
       {% endif %}
     </div>
   </div>
 </nav>
+
 
 
 
