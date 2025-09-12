@@ -74,7 +74,7 @@
                                 <button type="submit" class="btn new-chat-submit-btn" id="startChatBtn" disabled>
                                     <i class="fas fa-comments me-2"></i>Start Conversation
                                 </button>
-                                <a href="#" class="btn new-chat-cancel-btn">
+                                <a href="{% url 'chat_history' %}" class="btn new-chat-cancel-btn">
                                     <i class="fas fa-history me-2"></i>View Past Chats
                                 </a>
                             </div>
@@ -105,8 +105,10 @@
     function autofillTitle(selectElement) {
         const selected = selectElement.value;
         const titleInput = document.getElementById('id_title');
-        if (selected && !titleInput.value) {
+        if (selected) {
             titleInput.value = selected;
+        } else {
+            titleInput.value = '';
         }
     }
 

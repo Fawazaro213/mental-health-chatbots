@@ -75,6 +75,7 @@ DATABASES = {
 
 AUTH_USER_MODEL = 'users.CustomUser'
 DEFAULT_FROM_EMAIL = 'support@mindcare.ng'
+ADMIN_EMAIL = 'admin@mindcare.ng'  # Email for crisis notifications
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'home'
 LOGIN_URL = 'login'
