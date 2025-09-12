@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import *
 from .forms import StartChatForm
-from chatbot.llm import detect_intent, generate_prompt, query_llm
+from chatbot.llm import detect_intent, generate_prompt, query_llm, is_mental_health_related
 from django.core.mail import send_mail
 from django.conf import settings
 from chatbot.llm import chatbot_response
@@ -142,12 +142,21 @@ def ajax_chat_reply(request, convo_id):
                 intent_detected=intent
             )
 
-            prompt = generate_prompt(user_input)
-            try:
-                bot_reply = query_llm(prompt)
-            except Exception as e:
-                logger.error(f"LLM error for user {request.user.username}: {e}")
-                bot_reply = "I'm sorry, I'm experiencing some technical difficulties right now. Please try again in a moment."
+            # Check if the input is related to mental health
+            if not is_mental_health_related(user_input):
+                bot_reply = (
+                    "I'm MindCare Companion, designed specifically to provide mental health and emotional support. "
+                    "I'm here to help you with feelings, stress, anxiety, relationships, academic pressure, or any emotional challenges you're facing.\n\n"
+                    "If you'd like to talk about how you're feeling or need emotional support, I'm here to listen. "
+                    "What's on your mind today? 💙"
+                )
+            else:
+                prompt = generate_prompt(user_input)
+                try:
+                    bot_reply = query_llm(prompt)
+                except Exception as e:
+                    logger.error(f"LLM error for user {request.user.username}: {e}")
+                    bot_reply = "I'm sorry, I'm experiencing some technical difficulties right now. Please try again in a moment."
 
             bot_msg = Message.objects.create(
                 conversation=convo,
