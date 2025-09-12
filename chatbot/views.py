@@ -199,26 +199,46 @@ from django.contrib.auth.decorators import login_required
 @require_POST
 @login_required
 def rename_chat(request):
-    chat_id = request.POST.get("id")
+    chat_id = request.POST.get("session_id")
     new_title = request.POST.get("title")
     try:
         convo = Conversation.objects.get(id=chat_id, user=request.user)
         convo.title = new_title
         convo.save()
-        return JsonResponse({"success": True, "new_title": new_title})
+        
+        # Check if this is an AJAX request
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', ''):
+            return JsonResponse({"success": True, "new_title": new_title})
+        
+        messages.success(request, "Chat renamed successfully.")
+        return redirect(request.META.get('HTTP_REFERER', 'chat_history'))
     except Conversation.DoesNotExist:
-        return JsonResponse({"success": False})
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', ''):
+            return JsonResponse({"success": False, "error": "Chat session not found."})
+        
+        messages.error(request, "Chat session not found.")
+        return redirect(request.META.get('HTTP_REFERER', 'chat_history'))
 
 @require_POST
 @login_required
 def delete_chat(request):
-    chat_id = request.POST.get("id")
+    chat_id = request.POST.get("session_id")
     try:
         convo = Conversation.objects.get(id=chat_id, user=request.user)
         convo.delete()
-        return JsonResponse({"success": True})
+        
+        # Check if this is an AJAX request
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', ''):
+            return JsonResponse({"success": True})
+        
+        messages.success(request, "Chat deleted successfully.")
+        return redirect(request.META.get('HTTP_REFERER', 'chat_history'))
     except Conversation.DoesNotExist:
-        return JsonResponse({"success": False})
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', ''):
+            return JsonResponse({"success": False, "error": "Chat session not found."})
+        
+        messages.error(request, "Chat session not found.")
+        return redirect(request.META.get('HTTP_REFERER', 'chat_history'))
 
 
 @login_required

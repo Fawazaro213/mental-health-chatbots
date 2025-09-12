@@ -4,7 +4,8 @@
   <div class="sidebar-header p-3 d-flex align-items-center justify-content-between">
     <a href="{% url 'dashboard' %}" class="d-flex align-items-center text-decoration-none">
       <img src="{% static 'images/logo-icon.png' %}" alt="MindCare" width="32" height="32">
-      <span class="sidebar-brand ms-2 d-none d-lg-inline" style="color: var(--teal-tranquil); font-weight: 700;">MindCare</span>
+      <span class="sidebar-brand ms-2 d-none d-lg-inline"
+        style="color: var(--teal-tranquil); font-weight: 700;">MindCare</span>
     </a>
     <button class="sidebar-toggle btn btn-link p-0" aria-label="Toggle Sidebar">
       <i class="fas fa-chevron-left text-muted"></i>
@@ -33,89 +34,94 @@
     <!-- Chat Sessions Section -->
     {% if sidebar_mode == "chat" %}
     <div class="px-3 py-2">
-      <a href="{% url 'start_new_chat' %}" class="btn w-100 mb-3" style="background-color: var(--pink-soft);">
+      <a href="{% url 'start_chat' %}" class="btn w-100 mb-3" style="background-color: var(--pink-soft);">
         <i class="fas fa-plus me-2"></i> New Chat
       </a>
-      
+
       <h6 class="sidebar-section-title d-flex align-items-center">
         <i class="fas fa-history me-2" style="color: var(--teal-tranquil);"></i>
         Your Chats
       </h6>
 
       {% if grouped_sessions %}
-        {% for label, sessions in grouped_sessions.items %}
-          {% if sessions %}
-            <div class="chat-group mb-3">
-              <small class="text-uppercase text-muted d-block mb-1">{{ label }}</small>
-              <div class="list-group list-group-flush">
-                {% for session in sessions %}
-                  <div class="chat-session-item list-group-item list-group-item-action border-0 py-2 px-2{% if session.id|stringformat:"s" == current_session %} active{% endif %}">
-                    <div class="d-flex align-items-center">
-                      <i class="fas fa-comment-dots me-2" style="color: var(--lavender-light);"></i>
-                      <span class="chat-title flex-grow-1">{{ session.title|default:"Untitled"|truncatechars:20 }}</span>
-                      <div class="dropdown">
-                        <button class="btn btn-sm btn-link text-muted p-0" data-bs-toggle="dropdown">
-                          <i class="fas fa-ellipsis-v"></i>
+      {% for label, sessions in grouped_sessions.items %}
+      {% if sessions %}
+      <div class="chat-group mb-3">
+        <small class="text-uppercase text-muted d-block mb-1">{{ label }}</small>
+        <div class="list-group list-group-flush">
+          {% for session in sessions %}
+          <div
+            class="chat-session-item list-group-item list-group-item-action border-0 py-2 px-2 position-relative{% if session.id|stringformat:"
+            s"==current_session %} active{% endif %}" data-chat-id="{{ session.id }}" style="cursor: pointer;">
+            <div class="d-flex align-items-center">
+              <i class="fas fa-comment-dots me-2" style="color: var(--lavender-light);"></i>
+              <span class="chat-title flex-grow-1">{{ session.title|default:"Untitled"|truncatechars:20 }}</span>
+              <div class="dropdown">
+                <button class="btn btn-sm btn-link text-muted p-0" data-bs-toggle="dropdown"
+                  onclick="event.stopPropagation();">
+                  <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li>
+                    <form method="post" action="{% url 'rename_chat' %}" class="px-2 py-1">
+                      {% csrf_token %}
+                      <input type="hidden" name="session_id" value="{{ session.id }}">
+                      <div class="input-group input-group-sm mb-2">
+                        <input type="text" name="title" value="{{ session.title }}" class="form-control">
+                        <button type="submit" class="btn" style="background-color: var(--teal-tranquil); color: white;">
+                          <i class="fas fa-check"></i>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                          <li>
-                            <form method="post" action="{% url 'rename_session' session_id=session.id %}" class="px-2 py-1">
-                              {% csrf_token %}
-                              <div class="input-group input-group-sm mb-2">
-                                <input type="text" name="title" value="{{ session.title }}" class="form-control">
-                                <button type="submit" class="btn" style="background-color: var(--teal-tranquil); color: white;">
-                                  <i class="fas fa-check"></i>
-                                </button>
-                              </div>
-                            </form>
-                          </li>
-                          <li>
-                            <form method="post" action="{% url 'delete_session' session_id=session.id %}">
-                              {% csrf_token %}
-                              <button type="submit" class="dropdown-item text-danger">
-                                <i class="fas fa-trash-alt me-2"></i> Delete
-                              </button>
-                            </form>
-                          </li>
-                        </ul>
                       </div>
-                    </div>
-                    <small class="text-muted d-block ms-4">{{ session.created_at|date:"M d, H:i" }}</small>
-                  </div>
-                {% endfor %}
+                    </form>
+                  </li>
+                  <li>
+                    <form method="post" action="{% url 'delete_chat' %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="session_id" value="{{ session.id }}">
+                      <button type="submit" class="dropdown-item text-danger">
+                        <i class="fas fa-trash-alt me-2"></i> Delete
+                      </button>
+                    </form>
+                  </li>
+                </ul>
               </div>
             </div>
-          {% endif %}
-        {% endfor %}
-      {% else %}
-        <div class="text-center py-3">
-          <i class="fas fa-comment-slash fa-2x mb-2" style="color: var(--gray-light);"></i>
-          <p class="small text-muted">No chat sessions yet</p>
+            <small class="text-muted d-block ms-4">{{ session.started_at|date:"M d, H:i" }}</small>
+          </div>
+          {% endfor %}
         </div>
+      </div>
+      {% endif %}
+      {% endfor %}
+      {% else %}
+      <div class="text-center py-3">
+        <i class="fas fa-comment-slash fa-2x mb-2" style="color: var(--gray-light);"></i>
+        <p class="small text-muted">No chat sessions yet</p>
+      </div>
       {% endif %}
     </div>
     {% else %}
-      <!-- Quick Links -->
-      <div class="px-3 py-2">
-        <h6 class="sidebar-section-title">
-          <i class="fas fa-link me-2" style="color: var(--teal-tranquil);"></i>
-          Quick Links
-        </h6>
-        <ul class="nav flex-column">
-          <li class="nav-item">
-            <a href="{% url 'edit_profile' %}" class="nav-link d-flex align-items-center py-2 px-3 rounded">
-              <i class="fas fa-user-edit me-3" style="color: var(--pink-soft); width: 24px; text-align: center;"></i>
-              <span class="nav-text">Edit Profile</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{% url 'start_new_chat' %}" class="nav-link d-flex align-items-center py-2 px-3 rounded">
-              <i class="fas fa-robot me-3" style="color: var(--lavender-light); width: 24px; text-align: center;"></i>
-              <span class="nav-text">Chatbot</span>
-            </a>
-          </li>
-        </ul>
-      </div>
+    <!-- Quick Links -->
+    <div class="px-3 py-2">
+      <h6 class="sidebar-section-title">
+        <i class="fas fa-link me-2" style="color: var(--teal-tranquil);"></i>
+        Quick Links
+      </h6>
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a href="{% url 'edit_profile' %}" class="nav-link d-flex align-items-center py-2 px-3 rounded">
+            <i class="fas fa-user-edit me-3" style="color: var(--pink-soft); width: 24px; text-align: center;"></i>
+            <span class="nav-text">Edit Profile</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{% url 'start_chat' %}" class="nav-link d-flex align-items-center py-2 px-3 rounded">
+            <i class="fas fa-robot me-3" style="color: var(--lavender-light); width: 24px; text-align: center;"></i>
+            <span class="nav-text">Chatbot</span>
+          </a>
+        </li>
+      </ul>
+    </div>
     {% endif %}
 
     <!-- Secondary Navigation -->
@@ -123,13 +129,15 @@
       <ul class="nav flex-column">
         <li class="nav-item">
           <a href="{% url 'edit_profile' %}" class="nav-link d-flex align-items-center py-2 px-3 rounded">
-            <i class="fas fa-user-circle me-3" style="color: var(--teal-tranquil); width: 24px; text-align: center;"></i>
+            <i class="fas fa-user-circle me-3"
+              style="color: var(--teal-tranquil); width: 24px; text-align: center;"></i>
             <span class="nav-text">Profile</span>
           </a>
         </li>
         <li class="nav-item">
           <a href="{% url 'logout' %}" class="nav-link d-flex align-items-center py-2 px-3 rounded">
-            <i class="fas fa-sign-out-alt me-3" style="color: var(--coral-gentle); width: 24px; text-align: center;"></i>
+            <i class="fas fa-sign-out-alt me-3"
+              style="color: var(--coral-gentle); width: 24px; text-align: center;"></i>
             <span class="nav-text">Logout</span>
           </a>
         </li>
@@ -147,7 +155,7 @@
     left: 0;
     top: 0;
     background-color: var(--white-soft);
-    box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
     display: flex;
     flex-direction: column;
     z-index: 1000;
@@ -155,7 +163,7 @@
   }
 
   .sidebar-header {
-    border-bottom: 1px solid rgba(0,0,0,0.05);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   }
 
   .sidebar-brand {
@@ -218,7 +226,7 @@
 
   .dropdown-menu {
     border: none;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     padding: 0.5rem;
   }
@@ -232,6 +240,7 @@
     .sidebar {
       transform: translateX(-100%);
     }
+
     .sidebar.mobile-visible {
       transform: translateX(0);
     }
@@ -239,19 +248,37 @@
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Toggle sidebar on mobile
-  const sidebar = document.querySelector('.sidebar');
-  const sidebarToggle = document.querySelector('.sidebar-toggle');
-  
-  sidebarToggle.addEventListener('click', function() {
-    sidebar.classList.toggle('mobile-visible');
-  });
+  document.addEventListener('DOMContentLoaded', function () {
+    // Toggle sidebar on mobile
+    const sidebar = document.querySelector('.sidebar');
+    const sidebarToggle = document.querySelector('.sidebar-toggle');
 
-  // Initialize Bootstrap dropdowns
-  const dropdowns = document.querySelectorAll('.dropdown');
-  dropdowns.forEach(dropdown => {
-    new bootstrap.Dropdown(dropdown);
+    sidebarToggle.addEventListener('click', function () {
+      sidebar.classList.toggle('mobile-visible');
+    });
+
+    // Initialize Bootstrap dropdowns
+    const dropdowns = document.querySelectorAll('.dropdown');
+    dropdowns.forEach(dropdown => {
+      new bootstrap.Dropdown(dropdown);
+    });
+
+    // Handle chat session clicks
+    const chatItems = document.querySelectorAll('.chat-session-item');
+    console.log(chatItems);
+    chatItems.forEach(item => {
+      item.addEventListener('click', function (e) {
+        console.log('clicked');
+        // Don't navigate if clicking on dropdown or form elements
+        if (e.target.closest('.dropdown') || e.target.closest('form')) {
+          return;
+        }
+
+        const chatId = this.getAttribute('data-chat-id');
+        if (chatId) {
+          window.location.href = `/c/chat/${chatId}/`;
+        }
+      });
+    });
   });
-});
 </script>

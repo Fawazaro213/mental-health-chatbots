@@ -144,7 +144,7 @@
               <small class="text-uppercase text-muted d-block mb-1">{{ label }}</small>
               <div class="list-group list-group-flush">
                 {% for session in sessions %}
-                <div class="chat-session-item list-group-item px-2 py-2 border-0 d-flex flex-column{% if session.id|stringformat:"s" == current_session %} active{% endif %}">
+                <div class="chat-session-item list-group-item px-2 py-2 border-0 d-flex flex-column{% if session.id|stringformat:"s" == current_session %} active{% endif %}" style="cursor: pointer;" data-chat-id="{{ session.id }}">
                   <div class="d-flex align-items-center">
                     <i class="fas fa-comment-dots me-2" style="color: var(--lavender-light);"></i>
                     <span class="chat-title flex-grow-1 text-truncate" data-session-id="{{ session.id }}" data-session-title="{{ session.title }}">
@@ -401,8 +401,9 @@ document.addEventListener('DOMContentLoaded', function () {
       headers: {
         "X-CSRFToken": "{{ csrf_token }}",
         "Content-Type": "application/x-www-form-urlencoded",
+        "X-Requested-With": "XMLHttpRequest",
       },
-      body: new URLSearchParams({ id: chatId, title: newTitle })
+      body: new URLSearchParams({ session_id: chatId, title: newTitle })
     })
     .then(res => res.json())
     .then(data => {
@@ -436,8 +437,9 @@ document.addEventListener('DOMContentLoaded', function () {
       headers: {
         "X-CSRFToken": "{{ csrf_token }}",
         "Content-Type": "application/x-www-form-urlencoded",
+        "X-Requested-With": "XMLHttpRequest",
       },
-      body: new URLSearchParams({ id: chatId })
+      body: new URLSearchParams({ session_id: chatId })
     })
     .then(res => res.json())
     .then(data => {
@@ -447,6 +449,21 @@ document.addEventListener('DOMContentLoaded', function () {
         deleteModal.hide();
       } else {
         alert("Could not delete chat.");
+      }
+    });
+  });
+
+  // Handle chat session clicks for navigation
+  document.querySelectorAll('.chat-session-item').forEach(item => {
+    item.addEventListener('click', function(e) {
+      // Don't navigate if clicking on dropdown or its children
+      if (e.target.closest('.dropdown') || e.target.closest('.chat-dropdown')) {
+        return;
+      }
+      
+      const chatId = this.getAttribute('data-chat-id');
+      if (chatId) {
+        window.location.href = `/c/chat/${chatId}/`;
       }
     });
   });
