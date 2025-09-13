@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import *
 from .forms import StartChatForm
-from chatbot.llm import detect_intent, generate_prompt, query_llm, is_mental_health_related
+from chatbot.llm import detect_intent, generate_prompt, query_llm
 from django.core.mail import send_mail
 from django.conf import settings
 from chatbot.llm import chatbot_response
@@ -142,28 +142,19 @@ def ajax_chat_reply(request, convo_id):
                 intent_detected=intent
             )
 
-            # Get recent conversation context for better classification
+            # Get recent conversation context for better responses
             recent_messages = Message.objects.filter(
                 conversation=convo
             ).order_by('-timestamp')[:10]  # Last 10 messages for context
-            
+
             conversation_context = [msg.content for msg in recent_messages]
 
-            # Check if the input is related to mental health
-            if not is_mental_health_related(user_input, conversation_context):
-                bot_reply = (
-                    "I'm MindCare Companion, designed specifically to provide mental health and emotional support. "
-                    "I'm here to help you with feelings, stress, anxiety, relationships, academic pressure, or any emotional challenges you're facing.\n\n"
-                    "If you'd like to talk about how you're feeling or need emotional support, I'm here to listen. "
-                    "What's on your mind today? 💙"
-                )
-            else:
-                prompt = generate_prompt(user_input)
-                try:
-                    bot_reply = query_llm(prompt)
-                except Exception as e:
-                    logger.error(f"LLM error for user {request.user.username}: {e}")
-                    bot_reply = "I'm sorry, I'm experiencing some technical difficulties right now. Please try again in a moment."
+            # Use the updated chatbot_response function
+            try:
+                bot_reply = chatbot_response(user_input, is_first_message=False, conversation_context=conversation_context)
+            except Exception as e:
+                logger.error(f"LLM error for user {request.user.username}: {e}")
+                bot_reply = "I'm sorry, I'm experiencing some technical difficulties right now. Please try again in a moment."
 
             bot_msg = Message.objects.create(
                 conversation=convo,
