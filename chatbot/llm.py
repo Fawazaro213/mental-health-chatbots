@@ -202,30 +202,29 @@ def generate_prompt(user_input):
         )
     else:
         return (
-            "Provide general mental health support with:\n"
-            "1. Active listening reflection\n"
-            "2. Open-ended question\n"
-            "3. Psycho-education snippet\n"
-            "4. Resource suggestion\n"
+            "Respond naturally and helpfully to this user input. "
+            "If it's mental health related, provide supportive guidance. "
+            "If it's technical/educational, provide clear, accurate information. "
+            "If it's general conversation, engage naturally and supportively.\n"
             "--- User input: " + user_input
         )
 
 # -------- Azure LLM Query -------- #
 def query_llm(prompt):
     system_prompt = (
-        "You are **MindCare Companion** - an AI mental health supporter for students. "
-        "You combine professional therapeutic techniques with compassionate support.\n\n"
-        "Core Protocols:\n"
-        "1. 🚨 CRISIS: Detect urgency, provide resources, escalate if needed\n"
-        "2. 🧠 CBT: Use cognitive restructuring, behavioral activation\n"
-        "3. 🧘 MINDFULNESS: Offer grounding techniques when appropriate\n"
-        "4. 📊 PROGRESS: Track user patterns (but don't diagnose)\n\n"
+        "You are **MindCare Companion** - an AI assistant that can help with various topics including mental health support, academic questions, programming, and general conversation.\n\n"
+        "Core Capabilities:\n"
+        "1. 🚨 CRISIS: Detect mental health urgency, provide resources, escalate if needed\n"
+        "2. 🧠 MENTAL HEALTH: Use therapeutic techniques when appropriate\n"
+        "3. 📚 EDUCATION: Answer academic and technical questions clearly\n"
+        "4. 💬 CONVERSATION: Engage naturally on various topics\n\n"
         "Communication Rules:\n"
-        "- Always validate before problem-solving\n"
-        "- Use simple, jargon-free language\n"
-        "- Limit responses to 3-5 sentences\n"
-        "- Ask open-ended questions\n"
+        "- Be helpful and informative on all topics\n"
+        "- Use simple, clear language\n"
+        "- For mental health topics: validate before problem-solving\n"
+        "- For technical topics: provide accurate, practical information\n"
         "- Never make clinical diagnoses\n"
+        "- Maintain a supportive, friendly tone\n"
     )
 
     try:
@@ -259,25 +258,7 @@ def log_interaction(user_input, intent, response):
 
 # -------- Main Chatbot Function -------- #
 def chatbot_response(user_input, is_first_message=False, conversation_context=None):
-    # Check if the input is related to mental health
-    if not is_mental_health_related(user_input, conversation_context):
-        non_mental_health_response = (
-            "I'm MindCare Companion, designed specifically to provide mental health and emotional support. "
-            "I'm here to help you with feelings, stress, anxiety, relationships, academic pressure, or any emotional challenges you're facing.\n\n"
-            "If you'd like to talk about how you're feeling or need emotional support, I'm here to listen. "
-            "What's on your mind today? 💙"
-        )
-        log_interaction(user_input, "non_mental_health", non_mental_health_response)
-        
-        greeting = (
-            "🌱 Welcome to MindCare Companion. I'm here to listen and support you.\n"
-            "This is a safe space to share what's on your mind.\n\n"
-            "Remember: I'm not a replacement for professional care.\n\n"
-        ) if is_first_message else ""
-        
-        return greeting + non_mental_health_response
-    
-    # Process mental health related queries
+    # Process all user queries without mental health classification guard
     intent = detect_intent(user_input)
     prompt = generate_prompt(user_input)
     response = query_llm(prompt)
