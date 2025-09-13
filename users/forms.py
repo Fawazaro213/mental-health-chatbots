@@ -130,6 +130,9 @@ class CombinedProfileForm(forms.ModelForm):
         self.fields['emergency_contact'].initial = self.user_instance.emergency_contact
         self.fields['allow_data_collection'].initial = self.user_instance.allow_data_collection
 
+        # Make avatar field hidden
+        self.fields['avatar'].widget = forms.HiddenInput()
+
     def save(self, commit=True):
         profile = super().save(commit=False)
         if commit:
