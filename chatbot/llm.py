@@ -27,56 +27,138 @@ with open("intents.json", "r", encoding="utf-8") as f:
 BLACKLIST_WORDS = ["damn", "shit", "fuck", "bastard"]
 
 # -------- Mental Health Topic Detection -------- #
-def is_mental_health_related(user_input):
+def is_mental_health_related(user_input, conversation_context=None):
     """
-    Check if the user input is related to mental health or emotional support.
+    Advanced mental health topic detection that considers context and intent.
     Returns True if it's mental health related, False otherwise.
-    """
-    user_input = user_input.lower()
     
-    # Mental health and emotional keywords
-    mental_health_keywords = [
-        # Emotions and feelings
-        "feel", "feeling", "feelings", "emotion", "emotions", "mood", "moods",
-        "sad", "happy", "angry", "frustrated", "depressed", "anxious", "worry", "worried",
-        "scared", "afraid", "fear", "fearful", "nervous", "excited", "overwhelmed",
-        "lonely", "isolated", "hopeless", "helpless", "guilty", "shame", "ashamed",
+    Args:
+        user_input (str): The user's message
+        conversation_context (list, optional): Previous messages for context
+    """
+    user_input = user_input.lower().strip()
+    
+    # Immediate exclusions for clearly technical/educational queries
+    technical_patterns = [
+        # Programming and technical queries
+        r'\b(what is|define|explain|how to|tutorial|learn|teach me)\s+(python|javascript|java|html|css|sql|programming|coding|algorithm|function|variable|loop|array|object)\b',
+        r'\b(install|setup|configure|debug|error|syntax|code|script|framework|library|api|database)\b',
+        r'\b(vs code|visual studio|ide|compiler|interpreter|git|github|stack overflow)\b',
         
-        # Mental health conditions
-        "depression", "anxiety", "panic", "stress", "stressed", "trauma", "ptsd",
-        "bipolar", "adhd", "ocd", "eating disorder", "self harm", "suicide", "suicidal",
+        # Academic subjects (non-emotional context)
+        r'\b(what is|define|explain|formula|equation|theorem|calculate)\s+(math|mathematics|physics|chemistry|biology|calculus|algebra|geometry)\b',
+        r'\b(history of|who is|when did|where is|capital of|population of)\b',
         
-        # Mental health related activities
-        "therapy", "therapist", "counseling", "counselor", "psychologist", "psychiatrist",
-        "medication", "antidepressant", "mental health", "wellbeing", "wellness",
-        
-        # Academic/life stress (common for students)
-        "exam", "exams", "test", "tests", "study", "studying", "assignment", "assignments",
-        "project", "projects", "deadline", "deadlines", "grade", "grades", "academic",
-        "school", "university", "college", "pressure", "burnout", "workload",
-        "defence", "defense", "presentation", "presentations", "interview", "interviews",
-        
-        # Relationships and social
-        "relationship", "relationships", "friend", "friends", "family", "parents",
-        "boyfriend", "girlfriend", "breakup", "break up", "conflict", "fight", "fighting",
-        "social", "communication", "trust", "betrayal",
-        
-        # Life challenges
-        "problem", "problems", "issue", "issues", "trouble", "difficulty", "difficulties",
-        "challenge", "challenges", "struggle", "struggling", "hard time", "tough time",
-        "crisis", "emergency", "urgent", "help", "support", "advice", "guidance",
-        
-        # Sleep and physical symptoms related to mental health
-        "sleep", "insomnia", "nightmare", "nightmares", "tired", "exhausted", "fatigue",
-        "appetite", "eating", "weight", "energy", "motivation", "concentrate", "focus",
-        
-        # Coping and recovery
-        "cope", "coping", "manage", "managing", "recovery", "healing", "better",
-        "improve", "improvement", "progress", "growth", "change", "changing"
+        # General information queries
+        r'\b(weather|time|date|calendar|schedule|news|sports|music|movie|book|recipe)\b',
+        r'\b(directions|location|address|map|gps|travel|flight|hotel)\b'
     ]
     
-    # Check if any mental health keywords are present
-    return any(keyword in user_input for keyword in mental_health_keywords)
+    import re
+    for pattern in technical_patterns:
+        if re.search(pattern, user_input):
+            return False
+    
+    # Core emotional and mental health indicators
+    mental_health_indicators = {
+        # Direct emotional expressions
+        'emotions': [
+            'i feel', 'i\'m feeling', 'feeling', 'felt', 'emotions', 'emotional',
+            'sad', 'happy', 'angry', 'frustrated', 'depressed', 'anxious', 
+            'worried', 'scared', 'afraid', 'nervous', 'overwhelmed', 'lonely',
+            'isolated', 'hopeless', 'helpless', 'guilty', 'ashamed', 'stressed'
+        ],
+        
+        # Mental health conditions and symptoms
+        'conditions': [
+            'depression', 'anxiety', 'panic attack', 'panic', 'trauma', 'ptsd',
+            'bipolar', 'adhd', 'ocd', 'eating disorder', 'self harm', 'suicide',
+            'suicidal', 'insomnia', 'nightmare', 'nightmares'
+        ],
+        
+        # Professional help and treatment
+        'treatment': [
+            'therapy', 'therapist', 'counseling', 'counselor', 'psychologist',
+            'psychiatrist', 'medication', 'antidepressant', 'mental health'
+        ],
+        
+        # Personal struggles and challenges (emotional context)
+        'struggles': [
+            'struggling with', 'having trouble', 'difficult time', 'hard time',
+            'tough time', 'going through', 'dealing with', 'coping with',
+            'can\'t handle', 'too much', 'breaking down', 'falling apart'
+        ],
+        
+        # Help-seeking behaviors
+        'help_seeking': [
+            'need help', 'need support', 'need advice', 'need someone to talk',
+            'don\'t know what to do', 'what should i do', 'how do i cope',
+            'how do i deal', 'how do i handle', 'tips for managing', 'advice on',
+            'give me tips', 'help me manage', 'how can i manage', 'manage it'
+        ],
+        
+        # Physical symptoms with emotional context
+        'physical_emotional': [
+            'can\'t sleep', 'trouble sleeping', 'exhausted', 'no energy',
+            'lost motivation', 'can\'t concentrate', 'can\'t focus', 'appetite',
+            'tired all the time', 'physically drained', 'very tired', 'so tired',
+            'really tired', 'extremely tired', 'actually tired'
+        ],
+        
+        # Relationship and social issues
+        'relationships': [
+            'relationship problems', 'relationship issues', 'breakup', 'broke up',
+            'fight with', 'argument with', 'family problems', 'friend problems',
+            'social anxiety', 'trust issues', 'communication problems'
+        ]
+    }
+    
+    # Check for direct mental health indicators
+    for category, keywords in mental_health_indicators.items():
+        for keyword in keywords:
+            if keyword in user_input:
+                return True
+    
+    # Context-aware detection for conversational responses
+    conversational_mental_health = [
+        # Gratitude and acknowledgment in therapy context
+        'thank you', 'thanks', 'that helps', 'that\'s helpful', 'i appreciate',
+        'that makes sense', 'i understand', 'good advice', 'feel better',
+        
+        # Progress and improvement expressions
+        'getting better', 'feeling better', 'making progress', 'improving',
+        'helpful', 'working on myself', 'trying to', 'want to change',
+        
+        # Clarification and engagement
+        'tell me more', 'how do i', 'what about', 'is it normal', 'am i',
+        'should i', 'can you help', 'any suggestions'
+    ]
+    
+    # If we have conversation context, these phrases are likely mental health related
+    if conversation_context and len(conversation_context) > 0:
+        for phrase in conversational_mental_health:
+            if phrase in user_input:
+                return True
+    
+    # Academic stress with emotional indicators
+    academic_stress_patterns = [
+        r'\b(nervous|anxious|worried|stressed|scared|afraid|overwhelmed)\s+(about|for|before)\s+(exam|test|presentation|defense|interview|assignment|project|deadline)\b',
+        r'\b(feel|feeling)\s+(nervous|anxious|worried|stressed|overwhelmed|pressure)\b',
+        r'\b(too much|can\'t handle|struggling with|having trouble with)\s+(school|university|college|studies|work|workload|deadlines)\b',
+        r'\b(burnout|exhausted|tired)\s+(from|because of|due to)\s+(school|studies|work|assignments|projects)\b'
+    ]
+    
+    for pattern in academic_stress_patterns:
+        if re.search(pattern, user_input):
+            return True
+    
+    # Simple length and personal pronoun check for very short responses
+    if len(user_input.split()) <= 3:
+        personal_responses = ['i am', 'i\'m', 'me too', 'yes', 'no', 'okay', 'ok', 'sure']
+        if any(response in user_input for response in personal_responses) and conversation_context:
+            return True
+    
+    return False
 
 # -------- Intent Detection -------- #
 def detect_intent(user_input):
@@ -103,7 +185,7 @@ def generate_prompt(user_input):
     elif intent == "anxiety_support":
         return (
             "Provide CBT-based anxiety support:\n"
-            "1. Psychoeducation about anxiety\n"
+            "1. Psycho-education about anxiety\n"
             "2. Grounding techniques (5-4-3-2-1 method)\n"
             "3. Cognitive restructuring example\n"
             "4. Short breathing exercise\n"
@@ -123,7 +205,7 @@ def generate_prompt(user_input):
             "Provide general mental health support with:\n"
             "1. Active listening reflection\n"
             "2. Open-ended question\n"
-            "3. Psychoeducation snippet\n"
+            "3. Psycho-education snippet\n"
             "4. Resource suggestion\n"
             "--- User input: " + user_input
         )
@@ -176,9 +258,9 @@ def log_interaction(user_input, intent, response):
         )
 
 # -------- Main Chatbot Function -------- #
-def chatbot_response(user_input, is_first_message=False):
+def chatbot_response(user_input, is_first_message=False, conversation_context=None):
     # Check if the input is related to mental health
-    if not is_mental_health_related(user_input):
+    if not is_mental_health_related(user_input, conversation_context):
         non_mental_health_response = (
             "I'm MindCare Companion, designed specifically to provide mental health and emotional support. "
             "I'm here to help you with feelings, stress, anxiety, relationships, academic pressure, or any emotional challenges you're facing.\n\n"

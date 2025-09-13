@@ -142,8 +142,15 @@ def ajax_chat_reply(request, convo_id):
                 intent_detected=intent
             )
 
+            # Get recent conversation context for better classification
+            recent_messages = Message.objects.filter(
+                conversation=convo
+            ).order_by('-timestamp')[:10]  # Last 10 messages for context
+            
+            conversation_context = [msg.content for msg in recent_messages]
+
             # Check if the input is related to mental health
-            if not is_mental_health_related(user_input):
+            if not is_mental_health_related(user_input, conversation_context):
                 bot_reply = (
                     "I'm MindCare Companion, designed specifically to provide mental health and emotional support. "
                     "I'm here to help you with feelings, stress, anxiety, relationships, academic pressure, or any emotional challenges you're facing.\n\n"
